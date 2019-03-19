@@ -166,14 +166,14 @@ installed and accessible from the user's home dir."
     (seq-into ansi-colors-vector 'list)))
 
 
-(defun theme-magic-theme-from-ansi ()
+(defun theme-magic-theme-from-emacs-ansi ()
   (interactive)
   (theme-magic--check-dependencies)
   (theme-magic--apply-colors-with-pywal
    (theme-magic--16-colors-from-ansi)))
 
 
-(defun theme-magic-theme-from-fonts ()
+(defun theme-magic-theme-from-emacs-fonts ()
   (interactive)
   (theme-magic--check-dependencies)
   (theme-magic--apply-colors-with-pywal
