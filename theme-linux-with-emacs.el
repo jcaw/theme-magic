@@ -1,6 +1,20 @@
 (require 'color)
 
 
+(defvar themelinux-theming-method 'ansi
+  "How to extract terminal colours from Emacs.
+
+Possible values are `ansi' and `fonts'.
+
+`ansi'  - Use the ansi colors defined in
+          `ansi-color-names-vector'. This is the preferred
+          method, but it will fail if the theme failed to define
+          ansi colors.
+
+`fonts' - Try to extract a nice color palette from inbuilt fonts.
+          Legacy method.")
+
+
 (defvar linuxtheme--preferred-fonts
   '(
     ;; Color0 uses the background of the default face so we don't include it.
@@ -46,12 +60,25 @@ E.g. \"Orange\" -> \"#FFA500\"."
               '(2)))))
 
 
+(defun themelinux--extract-background-color ()
+  "Extract the background color from the default font."
+  (themelinux--color-name-to-hex
+   (face-background 'default)))
+
+
+(defun themelinux--extract-shadow-color ()
+  (themelinux--color-name-to-hex
+   (face-foreground 'shadow)))
+
+
 (defun themelinux--extract-font-colors ()
   "Extract 16 terminal colours from inbuilt fonts."
+  ;; TODO: When duplicate colors are found, iterate over fallback fonts.
+
   ;; First colour is just the background color of the default face.
   (mapcar 'themelinux--color-name-to-hex
           (cons
-           (face-background 'default)
+           (themelinux--extract-background-color)
            (mapcar (lambda (font)
                      (face-foreground
                       font))
@@ -69,12 +96,40 @@ E.g. \"Orange\" -> \"#FFA500\"."
                         colors)))
 
 
+(defun themelinux--16-colors-from-ansi ()
+  (let* ((ansi-colors-vector
+          ;; Duplicate the 8 basic ansi colors to get a 16-color palette.
+          (vconcat ansi-color-names-vector
+                   ansi-color-names-vector)))
+    ;; Ansi colors are inconsistent. The first of the 8 ansi colors may be the
+    ;; background color, but it might also be the shadow color. We modify them
+    ;; manually to ensure consistency.
+    (aset ansi-colors-vector 0 (themelinux--extract-background-color))
+    (aset ansi-colors-vector 8 (themelinux--extract-shadow-color))
+    (seq-into ansi-colors-vector 'list)))
+
+
+(defun themelinux-theme-from-ansi ()
+  (interactive)
+  (themelinux--apply-colors-with-pywal
+   (themelinux--16-colors-from-ansi)))
+
+
+(defun themelinux-theme-from-fonts ()
+  (interactive)
+  (themelinux--apply-colors-with-pywal
+   (themelinux--extract-font-colors)))
+
 
 (defun themelinux-theme-from-emacs ()
   "Theme the rest of Linux based on the Emacs theme."
   (interactive)
-  (themelinux--apply-colors-with-pywal
-   (themelinux--extract-font-colors)))
+  (cond ((eq themelinux-theming-method 'ansi)
+         (themelinux-theme-from-ansi))
+        ((eq themelinux-theming-method 'fonts)
+         (themelinux-theme-from-fonts))
+        (t (user-error (format "Unknown theming method: '%s'"
+                               themelinux-theming-method)))))
 
 
 (provide 'theme-linux-with-emacs)
