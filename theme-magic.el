@@ -54,12 +54,12 @@ Possible values are `ansi' and `fonts'.
             ;; buffer for this file instead.
             buffer-file-name))
           "python/")
-  "Directory where the python scripts for manipulating pywal should be.")
+  "Directory where the Python scripts for manipulating pywal should be.")
 
 
 (defvar theme-magic--pywal-python-script
   (concat theme-magic--scripts-directory "wal_change_colors.py")
-  "Name of the python script that sets the theme from 16 colours.")
+  "Path to the Python script that sets the theme from 16 colours.")
 
 
 (defun theme-magic--color-name-to-hex (color-name)
@@ -84,12 +84,16 @@ E.g. \"Orange\" -> \"#FFA500\"."
 
 
 (defun theme-magic--extract-shadow-color ()
+  "Extract the color of the shadow face, in hex."
   (theme-magic--color-name-to-hex
    (face-foreground 'shadow)))
 
 
 (defun theme-magic--extract-font-colors ()
-  "Extract 16 terminal colours from inbuilt fonts."
+  "Extract 16 terminal colours from the inbuilt fonts.
+
+This is designed to give a wide range of colors set by the
+current theme."
   ;; TODO: When duplicate colors are found, iterate over fallback fonts.
 
   ;; First colour is just the background color of the default face.
@@ -122,6 +126,10 @@ installed and accessible from the user's home dir."
 
 
 (defun theme-magic--call-pywal-process (colors)
+  "Call the script that sets the theme with pywal.
+
+This just calls the python script from the home directory. It
+doesn't provide any wrapper feedback to the user."
   (let (
         ;; If we're in a pyenv directory, we might accidentally run the virtual
         ;; version of Python instead of the user's root version. To fix this, we
@@ -147,6 +155,10 @@ installed and accessible from the user's home dir."
 
 
 (defun theme-magic--apply-colors-with-pywal (colors)
+  "Change the linux theme to the 16 colors in `colors' (using pywal).
+
+Provides some wrapper feedback to the user, plus some error
+handling."
   (message "Applying colors: %s" colors)
   (if (eq 0 (theme-magic--call-pywal-process colors))
       (message "Successfully applied colors!")
@@ -154,6 +166,7 @@ installed and accessible from the user's home dir."
 
 
 (defun theme-magic--16-colors-from-ansi ()
+  "Construct a set of 16 terminal colors from the current ansi colors."
   (let* ((ansi-colors-vector
           ;; Duplicate the 8 basic ansi colors to get a 16-color palette.
           (vconcat ansi-color-names-vector
@@ -167,6 +180,7 @@ installed and accessible from the user's home dir."
 
 
 (defun theme-magic-theme-from-emacs-ansi ()
+  "Theme Linux based on the Emacs theme, using `ansi-color-names-vector'."
   (interactive)
   (theme-magic--check-dependencies)
   (theme-magic--apply-colors-with-pywal
@@ -174,6 +188,7 @@ installed and accessible from the user's home dir."
 
 
 (defun theme-magic-theme-from-emacs-fonts ()
+  "Theme Linux based on the Emacs theme, extracting colors from fonts."
   (interactive)
   (theme-magic--check-dependencies)
   (theme-magic--apply-colors-with-pywal
