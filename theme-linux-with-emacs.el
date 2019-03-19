@@ -46,7 +46,7 @@ Possible values are `ansi' and `fonts'.
 
 
 (defvar themelinux--scripts-directory
-  ( (file-name-directory
+  (concat (file-name-directory
            (or
             ;; `load-file-name' should point to this file when loading.
             load-file-name
