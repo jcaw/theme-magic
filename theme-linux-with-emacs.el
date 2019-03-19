@@ -27,7 +27,7 @@ Possible values are `ansi' and `fonts'.
     font-lock-function-name-face        ; Color6
     default                             ; Color7 - foreground
     ;; Colours 8-15 are alternate colours. Normally this seems to mean they are
-    ;; "pale versions" of the main 6 colours, except colour 8, which is halfway
+    ;; "pale versions" of the main 8 colours, except colour 8, which is halfway
     ;; between the background and foreground. Pywal doesn't seem to use pale
     ;; colours here - it just adds a shadow for color 8, then defers back to the
     ;; first 8 colours.
