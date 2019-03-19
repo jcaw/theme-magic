@@ -45,6 +45,23 @@ Possible values are `ansi' and `fonts'.
   "List of fonts to extract the 16 terminal colours from.")
 
 
+(defvar themelinux--scripts-directory
+  ( (file-name-directory
+           (or
+            ;; `load-file-name' should point to this file when loading.
+            load-file-name
+            ;; For debugging/development: if not loaded as a package, use the
+            ;; buffer for this file instead.
+            buffer-file-name))
+          "python/")
+  "Directory where the python scripts for manipulating pywal should be.")
+
+
+(defvar themelinux--pywal-python-script
+  (concat themelinux--scripts-directory "wal_change_colors.py")
+  "Name of the python script that sets the theme from 16 colours.")
+
+
 (defun themelinux--color-name-to-hex (color-name)
   "Convert a `color-name' into a 6-digit hex value.
 
@@ -89,11 +106,23 @@ E.g. \"Orange\" -> \"#FFA500\"."
 
 (defun themelinux--apply-colors-with-pywal (colors)
   ;; TODO: Check pywal is installed
+  ;; TODO: Check Python is installed
   ;; TODO: Integrate this python colors script
   (message "Applying colors: %s" colors)
-  (if (eq 0 (apply 'call-process (append
-                                  '("~/.scripts/python/wal_change_colors.py" nil nil nil)
-                                  colors)))
+  (if (eq 0
+          ;; We have to use apply here to expand the list of colors.
+          (apply 'call-process
+                 ;; Have to expand the colors argument
+                 (append
+                  ;; These are the positional arguments that `call-process'
+                  ;; takes.
+                  '("python" nil nil nil)
+                  ;; These are the arguments that `call-process' will pass to
+                  ;; python.
+                  ;;
+                  ;; Throw in the python script, plus the 16 colors.
+                  (list themelinux--pywal-python-script)
+                  colors)))
       (message "Successfully applied colors!")
     (user-error "There was an error applying the colors.")))
 
