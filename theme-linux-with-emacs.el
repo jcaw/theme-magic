@@ -97,8 +97,7 @@ E.g. \"Orange\" -> \"#FFA500\"."
           (cons
            (themelinux--extract-background-color)
            (mapcar (lambda (font)
-                     (face-foreground
-                      font))
+                     (face-foreground font))
                    ;; Ignore the first font - it should be nil because we get
                    ;; the background color a different way.
                    (cdr linuxtheme--preferred-fonts)))))
