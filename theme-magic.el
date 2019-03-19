@@ -1,7 +1,7 @@
 (require 'color)
 
 
-(defvar themelinux-theming-method 'ansi
+(defvar theme-magic-theming-method 'ansi
   "How to extract terminal colours from Emacs.
 
 Possible values are `ansi' and `fonts'.
@@ -15,7 +15,7 @@ Possible values are `ansi' and `fonts'.
           Legacy method.")
 
 
-(defvar themelinux--preferred-fonts
+(defvar theme-magic--preferred-fonts
   '(
     ;; Color0 uses the background of the default face so we don't include it.
     nil                                 ; Color0
@@ -45,7 +45,7 @@ Possible values are `ansi' and `fonts'.
   "List of fonts to extract the 16 terminal colours from.")
 
 
-(defvar themelinux--scripts-directory
+(defvar theme-magic--scripts-directory
   (concat (file-name-directory
            (or
             ;; `load-file-name' should point to this file when loading.
@@ -57,12 +57,12 @@ Possible values are `ansi' and `fonts'.
   "Directory where the python scripts for manipulating pywal should be.")
 
 
-(defvar themelinux--pywal-python-script
-  (concat themelinux--scripts-directory "wal_change_colors.py")
+(defvar theme-magic--pywal-python-script
+  (concat theme-magic--scripts-directory "wal_change_colors.py")
   "Name of the python script that sets the theme from 16 colours.")
 
 
-(defun themelinux--color-name-to-hex (color-name)
+(defun theme-magic--color-name-to-hex (color-name)
   "Convert a `color-name' into a 6-digit hex value.
 
 E.g. \"Orange\" -> \"#FFA500\"."
@@ -77,33 +77,33 @@ E.g. \"Orange\" -> \"#FFA500\"."
               '(2)))))
 
 
-(defun themelinux--extract-background-color ()
+(defun theme-magic--extract-background-color ()
   "Extract the background color from the default font."
-  (themelinux--color-name-to-hex
+  (theme-magic--color-name-to-hex
    (face-background 'default)))
 
 
-(defun themelinux--extract-shadow-color ()
-  (themelinux--color-name-to-hex
+(defun theme-magic--extract-shadow-color ()
+  (theme-magic--color-name-to-hex
    (face-foreground 'shadow)))
 
 
-(defun themelinux--extract-font-colors ()
+(defun theme-magic--extract-font-colors ()
   "Extract 16 terminal colours from inbuilt fonts."
   ;; TODO: When duplicate colors are found, iterate over fallback fonts.
 
   ;; First colour is just the background color of the default face.
-  (mapcar 'themelinux--color-name-to-hex
+  (mapcar 'theme-magic--color-name-to-hex
           (cons
-           (themelinux--extract-background-color)
+           (theme-magic--extract-background-color)
            (mapcar (lambda (font)
                      (face-foreground font))
                    ;; Ignore the first font - it should be nil because we get
                    ;; the background color a different way.
-                   (cdr themelinux--preferred-fonts)))))
+                   (cdr theme-magic--preferred-fonts)))))
 
 
-(defun themelinux--check-dependencies ()
+(defun theme-magic--check-dependencies ()
   "Ensure dependencies are installed. Throws an error if not.
 
 Specifically, this checks that both python and pywal are
@@ -121,7 +121,7 @@ installed and accessible from the user's home dir."
                           "Is Python installed and on the path?")))))
 
 
-(defun themelinux--call-pywal-process (colors)
+(defun theme-magic--call-pywal-process (colors)
   (let (
         ;; If we're in a pyenv directory, we might accidentally run the virtual
         ;; version of Python instead of the user's root version. To fix this, we
@@ -130,7 +130,7 @@ installed and accessible from the user's home dir."
         ;; The color modification script will work with python 2 or 3, so just
         ;; use the default Python.
         (python-executable "python")
-        (theming-script themelinux--pywal-python-script)
+        (theming-script theme-magic--pywal-python-script)
         )
     ;; We have to use apply here to expand the list of colors.
     (apply 'call-process
@@ -146,14 +146,14 @@ installed and accessible from the user's home dir."
             colors))))
 
 
-(defun themelinux--apply-colors-with-pywal (colors)
+(defun theme-magic--apply-colors-with-pywal (colors)
   (message "Applying colors: %s" colors)
-  (if (eq 0 (themelinux--call-pywal-process colors))
+  (if (eq 0 (theme-magic--call-pywal-process colors))
       (message "Successfully applied colors!")
     (user-error "There was an error applying the colors.")))
 
 
-(defun themelinux--16-colors-from-ansi ()
+(defun theme-magic--16-colors-from-ansi ()
   (let* ((ansi-colors-vector
           ;; Duplicate the 8 basic ansi colors to get a 16-color palette.
           (vconcat ansi-color-names-vector
@@ -161,38 +161,38 @@ installed and accessible from the user's home dir."
     ;; Ansi colors are inconsistent. The first of the 8 ansi colors may be the
     ;; background color, but it might also be the shadow color. We modify them
     ;; manually to ensure consistency.
-    (aset ansi-colors-vector 0 (themelinux--extract-background-color))
-    (aset ansi-colors-vector 8 (themelinux--extract-shadow-color))
+    (aset ansi-colors-vector 0 (theme-magic--extract-background-color))
+    (aset ansi-colors-vector 8 (theme-magic--extract-shadow-color))
     (seq-into ansi-colors-vector 'list)))
 
 
-(defun themelinux-theme-from-ansi ()
+(defun theme-magic-theme-from-ansi ()
   (interactive)
-  (themelinux--check-dependencies)
-  (themelinux--apply-colors-with-pywal
-   (themelinux--16-colors-from-ansi)))
+  (theme-magic--check-dependencies)
+  (theme-magic--apply-colors-with-pywal
+   (theme-magic--16-colors-from-ansi)))
 
 
-(defun themelinux-theme-from-fonts ()
+(defun theme-magic-theme-from-fonts ()
   (interactive)
-  (themelinux--check-dependencies)
-  (themelinux--apply-colors-with-pywal
-   (themelinux--extract-font-colors)))
+  (theme-magic--check-dependencies)
+  (theme-magic--apply-colors-with-pywal
+   (theme-magic--extract-font-colors)))
 
 
-(defun themelinux-theme-from-emacs ()
+(defun theme-magic-theme-from-emacs ()
   "Theme the rest of Linux based on the Emacs theme."
   (interactive)
   ;; This will actually check dependencies twice, but that's fine - we want to
   ;; do it up front.
-  (themelinux--check-dependencies)
-  (cond ((eq themelinux-theming-method 'ansi)
-         (themelinux-theme-from-ansi))
-        ((eq themelinux-theming-method 'fonts)
-         (themelinux-theme-from-fonts))
+  (theme-magic--check-dependencies)
+  (cond ((eq theme-magic-theming-method 'ansi)
+         (theme-magic-theme-from-ansi))
+        ((eq theme-magic-theming-method 'fonts)
+         (theme-magic-theme-from-fonts))
         (t (user-error (format "Unknown theming method: '%s'"
-                               themelinux-theming-method)))))
+                               theme-magic-theming-method)))))
 
 
-(provide 'theme-linux-with-emacs)
-;;; theme-linux-with-emacs.el ends here
+(provide 'theme-magic)
+;;; theme-magic.el ends here
