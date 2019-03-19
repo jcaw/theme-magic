@@ -15,7 +15,7 @@ Possible values are `ansi' and `fonts'.
           Legacy method.")
 
 
-(defvar linuxtheme--preferred-fonts
+(defvar themelinux--preferred-fonts
   '(
     ;; Color0 uses the background of the default face so we don't include it.
     nil                                 ; Color0
@@ -100,7 +100,7 @@ E.g. \"Orange\" -> \"#FFA500\"."
                      (face-foreground font))
                    ;; Ignore the first font - it should be nil because we get
                    ;; the background color a different way.
-                   (cdr linuxtheme--preferred-fonts)))))
+                   (cdr themelinux--preferred-fonts)))))
 
 
 (defun themelinux--check-dependencies ()
