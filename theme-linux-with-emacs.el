@@ -103,6 +103,24 @@ E.g. \"Orange\" -> \"#FFA500\"."
                    (cdr linuxtheme--preferred-fonts)))))
 
 
+(defun themelinux--check-dependencies ()
+  "Ensure dependencies are installed. Throws an error if not.
+
+Specifically, this checks that both python and pywal are
+installed and accessible from the user's home dir."
+  ;; If we're in a pyenv directory, we might accidentally run the virtual
+  ;; version of Python instead of the user's root version. To fix this, we
+  ;; temporarily change to the user's dir.
+  (let ((default-directory "~/"))
+    (unless (executable-find "wal")
+      (user-error (concat "Could not find 'wal' executable. "
+                          "Is Pywal installed and on the path?")))
+    ;; TODO: Check wal is up-to-date enough to use, and the python implementation.
+    (unless (executable-find "python")
+      (user-error (concat "Could not find 'python' executable. "
+                          "Is Python installed and on the path?")))))
+
+
 (defun themelinux--call-pywal-process (colors)
   (let (
         ;; If we're in a pyenv directory, we might accidentally run the virtual
@@ -129,8 +147,6 @@ E.g. \"Orange\" -> \"#FFA500\"."
 
 
 (defun themelinux--apply-colors-with-pywal (colors)
-  ;; TODO: Check pywal is installed
-  ;; TODO: Check Python is installed
   (message "Applying colors: %s" colors)
   (if (eq 0 (themelinux--call-pywal-process colors))
       (message "Successfully applied colors!")
@@ -152,12 +168,14 @@ E.g. \"Orange\" -> \"#FFA500\"."
 
 (defun themelinux-theme-from-ansi ()
   (interactive)
+  (themelinux--check-dependencies)
   (themelinux--apply-colors-with-pywal
    (themelinux--16-colors-from-ansi)))
 
 
 (defun themelinux-theme-from-fonts ()
   (interactive)
+  (themelinux--check-dependencies)
   (themelinux--apply-colors-with-pywal
    (themelinux--extract-font-colors)))
 
@@ -165,6 +183,9 @@ E.g. \"Orange\" -> \"#FFA500\"."
 (defun themelinux-theme-from-emacs ()
   "Theme the rest of Linux based on the Emacs theme."
   (interactive)
+  ;; This will actually check dependencies twice, but that's fine - we want to
+  ;; do it up front.
+  (themelinux--check-dependencies)
   (cond ((eq themelinux-theming-method 'ansi)
          (themelinux-theme-from-ansi))
         ((eq themelinux-theming-method 'fonts)
