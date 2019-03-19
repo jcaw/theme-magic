@@ -198,8 +198,8 @@ handling."
 (defun theme-magic-theme-from-emacs ()
   "Theme the rest of Linux based on the Emacs theme."
   (interactive)
-  ;; This will actually check dependencies twice, but that's fine - we want to
-  ;; do it up front.
+  ;; This will actually check dependencies twice, but that's fine - it's cheap
+  ;; we want to do it up front.
   (theme-magic--check-dependencies)
   (cond ((eq theme-magic-theming-method 'ansi)
          (theme-magic-theme-from-ansi))
