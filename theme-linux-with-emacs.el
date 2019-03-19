@@ -103,24 +103,36 @@ E.g. \"Orange\" -> \"#FFA500\"."
                    (cdr linuxtheme--preferred-fonts)))))
 
 
+(defun themelinux--call-pywal-process (colors)
+  (let (
+        ;; If we're in a pyenv directory, we might accidentally run the virtual
+        ;; version of Python instead of the user's root version. To fix this, we
+        ;; temporarily change to the user's dir.
+        (default-directory "~/")
+        ;; The color modification script will work with python 2 or 3, so just
+        ;; use the default Python.
+        (python-executable "python")
+        (theming-script themelinux--pywal-python-script)
+        )
+    ;; We have to use apply here to expand the list of colors.
+    (apply 'call-process
+           (append
+            ;; Append the first arguments to the colors list to create one long
+            ;; list of arguments.
+            (list
+             python-executable
+             ;; These are the positional arguments that `call-process' takes.
+             nil nil nil
+             theming-script)
+            ;; Now we expand the list of colors
+            colors))))
+
+
 (defun themelinux--apply-colors-with-pywal (colors)
   ;; TODO: Check pywal is installed
   ;; TODO: Check Python is installed
   (message "Applying colors: %s" colors)
-  (if (eq 0
-          ;; We have to use apply here to expand the list of colors.
-          (apply 'call-process
-                 ;; Have to expand the colors argument
-                 (append
-                  ;; These are the positional arguments that `call-process'
-                  ;; takes.
-                  '("python" nil nil nil)
-                  ;; These are the arguments that `call-process' will pass to
-                  ;; python.
-                  ;;
-                  ;; Throw in the python script, plus the 16 colors.
-                  (list themelinux--pywal-python-script)
-                  colors)))
+  (if (eq 0 (themelinux--call-pywal-process colors))
       (message "Successfully applied colors!")
     (user-error "There was an error applying the colors.")))
 
