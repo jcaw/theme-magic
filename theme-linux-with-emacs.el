@@ -90,10 +90,12 @@ E.g. \"Orange\" -> \"#FFA500\"."
 (defun themelinux--apply-colors-with-pywal (colors)
   ;; TODO: Check pywal is installed
   ;; TODO: Integrate this python colors script
-  (message "colors: %s" colors)
-  (apply 'call-process (append
-                        '("~/.scripts/python/wal_change_colors.py" nil nil nil)
-                        colors)))
+  (message "Applying colors: %s" colors)
+  (if (eq 0 (apply 'call-process (append
+                                  '("~/.scripts/python/wal_change_colors.py" nil nil nil)
+                                  colors)))
+      (message "Successfully applied colors!")
+    (user-error "There was an error applying the colors.")))
 
 
 (defun themelinux--16-colors-from-ansi ()
