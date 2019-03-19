@@ -107,7 +107,6 @@ E.g. \"Orange\" -> \"#FFA500\"."
 (defun themelinux--apply-colors-with-pywal (colors)
   ;; TODO: Check pywal is installed
   ;; TODO: Check Python is installed
-  ;; TODO: Integrate this python colors script
   (message "Applying colors: %s" colors)
   (if (eq 0
           ;; We have to use apply here to expand the list of colors.
