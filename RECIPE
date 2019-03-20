@@ -1,0 +1,7 @@
+;;; -*- mode: emacs-lisp -*-
+
+(theme-magic
+ :fetcher github
+ :repo "jcaw/repo-name"
+ ;; Must explicitly download the python scripts folder
+ :files ("*.el" "README.md" "python")) 
