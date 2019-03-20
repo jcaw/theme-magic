@@ -19,7 +19,7 @@
 
 ## Usage
 
-Just call `M-x` `theme-magic-theme-from-emacs`. theme-magic will extract the colors from your Emacs theme and apply them to the rest of Linux with [Pywal](https://github.com/dylanaraps/pywal).
+Just call `M-x` `theme-magic-from-emacs`. theme-magic will extract the colors from your Emacs theme and apply them to the rest of Linux with [Pywal](https://github.com/dylanaraps/pywal).
 
 ## Installation
 
@@ -62,7 +62,7 @@ wal -i "path/to/wallpaper.png"
 Pywal will set your wallpaper and save it in its cache. Now, apply your Emacs theme:
 
 ```emacs
-M-x theme-magic-theme-from-emacs
+M-x theme-magic-from-emacs
 ```
 
 Now, when you call `wal -R`, both the wallpaper and the theme will be set.

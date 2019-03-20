@@ -25,7 +25,7 @@
 
 ;; What's the point in an Emacs theme if the rest of Linux looks different?
 ;;
-;; Just call `theme-magic-theme-from-emacs' and your Emacs theme will be applied
+;; Just call `theme-magic-from-emacs' and your Emacs theme will be applied
 ;; to your entire Linux session. Now all your colors match!
 ;;
 ;; `theme-magic' uses pywal to set its themes. Pywal must be installed
@@ -226,7 +226,7 @@ handling."
     (seq-into ansi-colors-vector 'list)))
 
 
-(defun theme-magic-theme-from-emacs-ansi ()
+(defun theme-magic-from-emacs-ansi ()
   "Theme Linux based on the Emacs theme, using `ansi-color-names-vector'."
   (interactive)
   (theme-magic--check-dependencies)
@@ -234,7 +234,7 @@ handling."
    (theme-magic--16-colors-from-ansi)))
 
 
-(defun theme-magic-theme-from-emacs-fonts ()
+(defun theme-magic-from-emacs-fonts ()
   "Theme Linux based on the Emacs theme, extracting colors from fonts."
   (interactive)
   (theme-magic--check-dependencies)
@@ -242,16 +242,16 @@ handling."
    (theme-magic--extract-font-colors)))
 
 
-(defun theme-magic-theme-from-emacs ()
+(defun theme-magic-from-emacs ()
   "Theme the rest of Linux based on the Emacs theme."
   (interactive)
   ;; This will actually check dependencies twice, but that's fine - it's cheap
   ;; we want to do it up front.
   (theme-magic--check-dependencies)
   (cond ((eq theme-magic-theming-method 'ansi)
-         (theme-magic-theme-from-ansi))
+         (theme-magic-from-emacs-ansi))
         ((eq theme-magic-theming-method 'fonts)
-         (theme-magic-theme-from-fonts))
+         (theme-magic-from-emacs-fonts))
         (t (user-error (format "Unknown theming method: '%s'"
                                theme-magic-theming-method)))))
 
