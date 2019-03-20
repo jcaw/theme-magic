@@ -1,3 +1,48 @@
+;;; theme-magic.el --- Apply your Emacs theme to the rest of Linux  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2019
+
+;; Author: GitHub user "jcaw" <40725916+jcaw@users.noreply.github.com>
+;; URL: https://github.com/jcaw/theme-magic.el
+;; Keywords: unix, faces, terminals, extensions
+;; Version: 0.1.0
+;; Package-Requires: ((emacs "24.4") color ansi-color font-lock)
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; What's the point in an Emacs theme if the rest of Linux looks different?
+;;
+;; Just call `theme-magic-theme-from-emacs' and your Emacs theme will be applied
+;; to your entire Linux session. Now all your colors match!
+;;
+;; `theme-magic' uses pywal to set its themes. Pywal must be installed
+;; separately. When you log out, the theme will be reset to normal. To restore
+;; your theme, call "wal -R" in a shell. To reload it whenever you log in, add
+;; "pywal -R" to your .xprofile (or whatever file you use to initialise programs
+;; when logging in graphically).
+;;
+;; See the documentation of Pywal for more information:
+;; https://github.com/dylanaraps/pywal
+;;
+;; Please note that pywal version 1.0.0 or greater is required.
+
+
+;;; Code:
+
+
 (require 'color)
 (require 'font-lock)
 (require 'ansi-color)
