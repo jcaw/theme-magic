@@ -1,4 +1,6 @@
 (require 'color)
+(require 'font-lock)
+(require 'ansi-color)
 
 
 (defvar theme-magic-theming-method 'ansi
