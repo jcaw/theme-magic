@@ -62,6 +62,21 @@ Possible values are `ansi' and `fonts'.
           Legacy method.")
 
 
+(defvar theme-magic--theming-functions
+  '(
+    load-theme
+    ;; When these are enabled, changing the theme calls wal multiple times.
+    ;; Might be fixable by running wal with an idle timer, but the updates would
+    ;; be less synchronised.
+    ;;
+    ;; enable-theme
+    ;; disable-theme
+    )
+  "Functions that should trigger an update of the linux theme.
+
+(If auto-updating is enabled.)")
+
+
 (defvar theme-magic--preferred-fonts
   '(
     ;; Color0 uses the background of the default face so we don't include it.
@@ -254,6 +269,34 @@ handling."
          (theme-magic-from-emacs-fonts))
         (t (user-error (format "Unknown theming method: '%s'"
                                theme-magic-theming-method)))))
+
+
+(defun theme-magic-from-emacs--wrapper (&rest _)
+  "Wrapper for `theme-magic-from-emacs' to be used as advice."
+  (theme-magic-from-emacs))
+
+
+(defun theme-magic-enable-auto-update ()
+  "Enable automatic Linux theme updating.
+
+The Linux theme will be updated whenever the Emacs theme is
+changed."
+  (interactive)
+  ;; TODO: Maybe swap this to a minor mode?
+  (mapc (lambda (func)
+          (advice-add func :after 'theme-magic-from-emacs--wrapper))
+        theme-magic--theming-functions))
+
+
+(defun theme-magic-disable-auto-update ()
+  "Disable automatic Linux theme updating.
+
+The Linux theme will need to be updated manually with
+`theme-magic-from-emacs'."
+  (interactive)
+  (mapc (lambda (func)
+          (advice-remove func 'theme-magic-from-emacs--wrapper))
+        theme-magic--theming-functions))
 
 
 (provide 'theme-magic)
