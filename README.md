@@ -1,5 +1,5 @@
 <p align="center">
-          <img align="center" src="media/logo.png" alt="theme-magic logo" />
+          <img src="media/logo.png" alt="theme-magic logo" />
 </p>
 
 <p align="center">
@@ -12,7 +12,7 @@
 
 <p align="center">
           <!-- TODO: Record demo -->
-          <img align="center" src="media/theming-linux-demo.gif" alt="Demonstration of applying the theme to Linux with theme-magic" />
+          <img src="media/theming-linux-demo.gif" alt="Demonstration of applying the theme to Linux with theme-magic" />
 </p>
 
 ---
