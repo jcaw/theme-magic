@@ -1,13 +1,23 @@
-<p align="center">![theme-magic logo](media/logo.png)</p>
+<p align="center">
+          <img align="center" src="media/logo.png" alt="theme-magic logo" />
+</p>
 
-<p align="center">What's the point in an Emacs theme if the rest of Linux looks different?</p>
+<p align="center">
+          What's the point in an Emacs theme if the rest of Linux looks different?
+</p>
 
-<p align="center">Apply your Emacs theme to the rest of Linux, using magic.</p>
+<p align="center">
+          Apply your Emacs theme to the rest of Linux, using magic.
+</p>
 
-<!-- TODO: Record demo -->
-<p align="center">![Demonstration of applying the theme to Linux with theme-magic](theming-linux-demo.gif)</p>
+<p align="center">
+          <!-- TODO: Record demo -->
+          <img align="center" src="media/theming-linux-demo.gif" alt="Demonstration of applying the theme to Linux with theme-magic" />
+</p>
 
 ---
+
+## Usage
 
 Just call `M-x theme-magic-theme-from-emacs`. theme-magic will extract the colors from your Emacs theme and apply them to the rest of Linux with [Pywal](https://github.com/dylanaraps/pywal).
 
@@ -33,7 +43,7 @@ Then require as normal:
 (require 'theme-magic)
 ```
 
-## Restoring Your Theme
+### Restoring Your Theme
 
 [Pywal](https://github.com/dylanaraps/pywal) only applies your theme to the current session. See its documentation for details. To restore the last theme, call `wal -R` in the shell. To restore your theme automatically, add the following to your `.xprofile` (or whichever dotfile is loaded automatically once your desktop starts up):
 
