@@ -14,7 +14,7 @@
 
 <p align="center">
           <!-- FIXME: Gif is resized. Looks terrible. -->
-          <img width="1034" height="600" src="media/theming-linux-demo.gif" alt="Demonstration of applying the theme to Linux with theme-magic" />
+          <img src="media/theming-linux-demo.gif" alt="Demonstration of applying the theme to Linux with theme-magic" />
 </p>
 
 ## Usage
