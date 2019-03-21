@@ -74,7 +74,7 @@ Possible values are `ansi' and `fonts'.
     )
   "Functions that should trigger an update of the linux theme.
 
-(If auto-updating is enabled.)")
+\(If auto-updating is enabled.)")
 
 
 (defvar theme-magic--preferred-fonts
@@ -125,7 +125,7 @@ Possible values are `ansi' and `fonts'.
 
 
 (defun theme-magic--color-name-to-hex (color-name)
-  "Convert a `color-name' into a 6-digit hex value.
+  "Convert a `COLOR-NAME' into a 6-digit hex value.
 
 E.g. \"Orange\" -> \"#FFA500\"."
   ;; Upcase result to make it neat.
@@ -188,7 +188,9 @@ installed and accessible from the user's home dir."
 
 
 (defun theme-magic--call-pywal-process (colors)
-  "Call the script that sets the theme with pywal.
+  "Call the Python script that sets the theme with pywal.
+
+`COLORS' should be the 16 hexadecimal colors to use as the theme.
 
 This just calls the python script from the home directory. It
 doesn't provide any wrapper feedback to the user."
@@ -217,14 +219,16 @@ doesn't provide any wrapper feedback to the user."
 
 
 (defun theme-magic--apply-colors-with-pywal (colors)
-  "Change the linux theme to the 16 colors in `colors' (using pywal).
+  "Change the linux theme to use the 16 `COLORS' (using pywal).
+
+`COLORS' should be a list of 16 hexadecimal terminal colors.
 
 Provides some wrapper feedback to the user, plus some error
 handling."
   (message "Applying colors: %s" colors)
   (if (eq 0 (theme-magic--call-pywal-process colors))
       (message "Successfully applied colors!")
-    (user-error "There was an error applying the colors.")))
+    (user-error "There was an error applying the colors")))
 
 
 (defun theme-magic--16-colors-from-ansi ()
