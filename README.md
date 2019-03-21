@@ -28,7 +28,7 @@ If you want the Linux theme to update automatically whenever the Emacs theme is 
 (theme-magic-enable-auto-update)
 ```
 
-You can disable it with `(theme-magic-disable-auto-update)`
+You can disable it with `(theme-magic-disable-auto-update)`.
 
 ## Installation
 
