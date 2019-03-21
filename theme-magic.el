@@ -257,6 +257,7 @@ handling."
    (theme-magic--extract-font-colors)))
 
 
+;;;###autoload
 (defun theme-magic-from-emacs ()
   "Theme the rest of Linux based on the Emacs theme."
   (interactive)
@@ -276,6 +277,7 @@ handling."
   (theme-magic-from-emacs))
 
 
+;;;###autoload
 (defun theme-magic-enable-auto-update ()
   "Enable automatic Linux theme updating.
 
@@ -288,6 +290,7 @@ changed."
         theme-magic--theming-functions))
 
 
+;;;###autoload
 (defun theme-magic-disable-auto-update ()
   "Disable automatic Linux theme updating.
 
