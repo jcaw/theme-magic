@@ -42,7 +42,7 @@ First, you must install [Pywal](https://github.com/dylanaraps/pywal) as a depend
           :fetcher github
           :repo "jcaw/theme-magic.el"
           ;; You have to explicitly download the python scripts folder
-          :files ("*.el" "README.md" "python")))
+          :files (:defaults "python")))
 ```
 
 Then require as normal:

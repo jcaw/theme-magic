@@ -2,6 +2,6 @@
 
 (theme-magic
  :fetcher github
- :repo "jcaw/repo-name"
+ :repo "jcaw/theme-magic"
  ;; Must explicitly download the python scripts folder
- :files ("*.el" "README.md" "python")) 
+ :files (:defaults "python"))
