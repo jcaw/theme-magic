@@ -24,7 +24,7 @@ Just call `M-x` `theme-magic-from-emacs`. theme-magic will extract the colors fr
 If you want the Linux theme to update automatically whenever the Emacs theme is changed, call `(theme-magic-enable-auto-update)`. For example:
 
 ```emacs-lisp
-(require 'theme-magic')
+(require 'theme-magic)
 (theme-magic-enable-auto-update)
 ```
 
