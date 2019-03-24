@@ -28,6 +28,8 @@ If you want the Linux theme to update automatically whenever the Emacs theme is 
 (theme-magic-enable-auto-update)
 ```
 
+You can disable it with `(theme-magic-disable-auto-update)`.
+
 ## Installation
 
 First, you must install [Pywal](https://github.com/dylanaraps/pywal) as a dependency. Check if it's installed by calling `wal` in a shell. Make sure Python is installed too.
