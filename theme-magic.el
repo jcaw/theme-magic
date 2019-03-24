@@ -74,7 +74,6 @@ Possible values are `ansi' and `fonts'.
     )
   "Functions that should trigger an update of the linux theme.
 
-\(If auto-updating is enabled.)")
 
 
 (defvar theme-magic--preferred-fonts
@@ -105,6 +104,7 @@ Possible values are `ansi' and `fonts'.
     )
   ;; TODO: Docstring
   "List of fonts to extract the 16 terminal colours from.")
+\(Iff auto-updating is enabled.\)")
 
 
 (defvar theme-magic--scripts-directory
