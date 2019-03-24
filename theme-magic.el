@@ -151,6 +151,12 @@ E.g. \"Orange\" -> \"#FFA500\"."
    (face-foreground 'shadow)))
 
 
+(defun theme-magic--extract-default-color ()
+  "Extract the foreground color of the default face, in hex."
+  (theme-magic--color-name-to-hex
+   (face-foreground 'default)))
+
+
 (defun theme-magic--extract-font-colors ()
   "Extract 16 terminal colours from the inbuilt fonts.
 
@@ -242,6 +248,10 @@ handling."
     ;; manually to ensure consistency.
     (aset ansi-colors-vector 0 (theme-magic--extract-background-color))
     (aset ansi-colors-vector 8 (theme-magic--extract-shadow-color))
+    ;; Some themes mess up the foreground color (seen in `material-theme').
+    ;; Foreground color is very important anyway, and should match Emacs even if
+    ;; it deviates from the Ansi palette. Manually fix it.
+    (aset ansi-colors-vector 7 (theme-magic--extract-default-color))
     (seq-into ansi-colors-vector 'list)))
 
 
