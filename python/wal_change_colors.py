@@ -70,8 +70,7 @@ def call_normally(image_path):
 
 def copy_config(destination):
     """Copy the config file to another destination."""
-    shutil.copy(CONFIG_FILE_PATH,
-                expandpath(destination))
+    shutil.copy(CONFIG_FILE_PATH, expandpath(destination))
 
 
 def config_exists():
@@ -119,4 +118,3 @@ if __name__ == "__main__":
                          "{}.".format(len(sys.argv) - 1))
     colors = sys.argv[1:16]
     replace_colors(colors)
-
