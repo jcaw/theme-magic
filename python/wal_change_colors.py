@@ -5,6 +5,7 @@ import re
 import os
 import shutil
 import json
+from subprocess import Popen, PIPE
 
 
 def expandpath(path):
@@ -47,9 +48,23 @@ def rewrite_wal_file(new_wallpaper):
         f.write(new_wallpaper)
 
 
+def call_process(args):
+    """Call an external process, with reasonable error handling."""
+    process = Popen(args, stdout=PIPE, stderr=PIPE)
+    stdout, stderr = process.communicate()
+    # We want to print the output to track the underlying process.
+    print(stdout.decode("utf-8"))
+    return_code = process.returncode
+    if return_code != 0:
+        stderr_string = stderr.decode(encoding="utf-8")
+        raise RuntimeError(
+            "Subprocess {} failed with return code {}. Error message:"
+            "\n{}".format(args, return_code, stderr_string))
+
+
 def refresh_wal():
     """Refresh the wal display (call `wal -R`)."""
-    os.system("wal -R")
+    call_process(["wal", "-R"])
 
 
 def reload_theme():
@@ -60,12 +75,12 @@ def reload_theme():
     out-of-date caches from the old config.
 
     """
-    os.system('wal --theme "{}"'.format(CONFIG_FILE_PATH))
+    call_process(["wal", "--theme", CONFIG_FILE_PATH])
 
 
 def call_normally(image_path):
     """Call wal as normal - set the entire theme from an image."""
-    os.system("wal -i {}".format(image_path))
+    call_process(["wal", "-i"])
 
 
 def copy_config(destination):
