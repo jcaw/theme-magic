@@ -54,7 +54,8 @@
     load-theme
     ;; When these are enabled, changing the theme calls wal multiple times.
     ;; Might be fixable by running wal with an idle timer, but the updates would
-    ;; be less synchronised.
+    ;; be less synchronised. Note that without these, disabling a theme will not
+    ;; trigger a wal update.
     ;;
     ;; enable-theme
     ;; disable-theme
