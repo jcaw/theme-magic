@@ -46,6 +46,7 @@
 (require 'color)
 (require 'font-lock)
 (require 'ansi-color)
+(require 'seq)
 
 
 (defvar theme-magic--theming-functions
