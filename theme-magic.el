@@ -82,6 +82,10 @@
   "Path to the Python script that sets the theme from 16 colours.")
 
 
+(defvar theme-magic--pywal-buffer-name "*pywal*"
+  "Name to use for pywal's output buffer.")
+
+
 (defun theme-magic--color-name-to-hex (color-name)
   "Convert a `COLOR-NAME' into a 6-digit hex value.
 
@@ -133,6 +137,13 @@ installed and accessible from the user's home dir."
                           "Is Python installed and on the path?")))))
 
 
+(defun theme-magic--erase-pywal-buffer ()
+  "Erase the contents of the pywal output buffer iff it exists."
+  (when (get-buffer theme-magic--pywal-buffer-name)
+    (with-current-buffer theme-magic--pywal-buffer-name
+      (erase-buffer))))
+
+
 (defun theme-magic--call-pywal-process (colors)
   "Call the Python script that sets the theme with pywal.
 
@@ -140,6 +151,8 @@ installed and accessible from the user's home dir."
 
 This just calls the python script from the home directory. It
 doesn't provide any wrapper feedback to the user."
+  ;; Kill pywal buffer if it already exists
+  (theme-magic--erase-pywal-buffer)
   (let (
         ;; If we're in a pyenv directory, we might accidentally run the virtual
         ;; version of Python instead of the user's root version. To fix this, we
@@ -158,7 +171,7 @@ doesn't provide any wrapper feedback to the user."
             (list
              python-executable
              ;; These are the positional arguments that `call-process' takes.
-             nil "*pywal*" t
+             nil theme-magic--pywal-buffer-name t
              theming-script)
             ;; Now we expand the list of colors
             colors))))
