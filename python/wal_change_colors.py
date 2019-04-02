@@ -26,11 +26,18 @@ def create_wal_cache():
         os.mkdir(WAL_DIR)
 
 
+def empty_config():
+    """Construct an empty pywal config."""
+    return {
+        "colors": {},
+    }
+
+
 def load_config():
     """Load the current pywal configuration."""
     if not config_exists():
         create_wal_cache()
-        return {}
+        return empty_config()
     with open(CONFIG_FILE_PATH, "r") as f:
         return json.load(f)
 
