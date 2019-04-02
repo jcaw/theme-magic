@@ -205,7 +205,10 @@ handling."
     ;; Foreground color is very important anyway, and should match Emacs even if
     ;; it deviates from the Ansi palette. Manually fix it.
     (aset ansi-colors-vector 7 (theme-magic--extract-default-color))
-    (seq-into ansi-colors-vector 'list)))
+    ;; Finally, we ensure each color is hexadecimal. (We also want to output a
+    ;; list - this will also serve that purpose.)
+    (mapcar 'theme-magic--color-name-to-hex
+            ansi-colors-vector)))
 
 
 ;;;###autoload
