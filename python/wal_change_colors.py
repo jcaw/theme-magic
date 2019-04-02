@@ -138,5 +138,5 @@ if __name__ == "__main__":
         raise ValueError("Please specify 16 colours as the command line "
                          "arguments. No more, no less. You gave "
                          "{}.".format(len(sys.argv) - 1))
-    colors = sys.argv[1:16]
+    colors = sys.argv[1:17]
     replace_colors(colors)
