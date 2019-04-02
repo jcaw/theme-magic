@@ -158,7 +158,7 @@ doesn't provide any wrapper feedback to the user."
             (list
              python-executable
              ;; These are the positional arguments that `call-process' takes.
-             nil nil nil
+             nil "*pywal*" t
              theming-script)
             ;; Now we expand the list of colors
             colors))))
@@ -174,7 +174,7 @@ handling."
   (message "Applying colors: %s" colors)
   (if (eq 0 (theme-magic--call-pywal-process colors))
       (message "Successfully applied colors!")
-    (user-error "There was an error applying the colors")))
+    (user-error "There was an error applying the colors. See buffer \"*pywal*\" for details.")))
 
 
 (defun theme-magic--16-colors-from-ansi ()
