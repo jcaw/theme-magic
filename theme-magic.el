@@ -185,7 +185,7 @@ doesn't provide any wrapper feedback to the user."
 Provides some wrapper feedback to the user, plus some error
 handling."
   (message "Applying colors: %s" colors)
-  (if (eq 0 (theme-magic--call-pywal-process colors))
+  (if (zerop (theme-magic--call-pywal-process colors))
       (message "Successfully applied colors!")
     (user-error "There was an error applying the colors. See buffer \"*pywal*\" for details.")))
 
