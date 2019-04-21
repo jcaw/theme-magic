@@ -228,25 +228,51 @@ handling."
 
 
 ;;;###autoload
-(defun theme-magic-enable-auto-update ()
+(define-minor-mode theme-magic-export-theme-mode
+  "Automatically export the Emacs theme to all Linux terminals, using Pywal.
+
+If this mode is active, the Linux theme will be updated
+automatically when you change the Emacs theme.
+
+Note that if an Emacs theme has already been set, it will not be
+exported when this mode is activated. You must explicitly export
+it, or change the theme again to trigger the auto-update.
+
+Under the hood, this mode calls `theme-magic-from-emacs' when you
+change the theme. See `theme-magic-from-emacs' for more
+information."
+  :lighter " TME"
+  :global t
+  :after-hook (if theme-magic-export-theme-mode
+                  ;; Was disabled. We should now enable.
+                  (progn
+                    (theme-magic--enable-auto-update)
+                    ;; TODO: Maybe update the theme overtly now? It will slow down
+                    ;; startup of the mode (and consquently, Emacs) so might be
+                    ;; best to leave this to the user.
+                    )
+                ;; Was enabled. We should now disable.
+                (theme-magic--disable-auto-update)))
+
+
+(defun theme-magic--enable-auto-update ()
   "Enable automatic Linux theme updating.
 
-The Linux theme will be updated whenever the Emacs theme is
-changed."
-  (interactive)
-  ;; TODO: Maybe swap this to a minor mode?
+Once enabled, the Linux theme will be updated whenever the Emacs
+theme is changed.
+
+Note that if an Emacs theme has already been set, it will not be
+exported - you must do that manually or change the theme again."
   (mapc (lambda (func)
           (advice-add func :after 'theme-magic-from-emacs--wrapper))
         theme-magic--theming-functions))
 
 
-;;;###autoload
-(defun theme-magic-disable-auto-update ()
+(defun theme-magic--disable-auto-update ()
   "Disable automatic Linux theme updating.
 
-The Linux theme will need to be updated manually with
-`theme-magic-from-emacs'."
-  (interactive)
+Once disabled, the Linux theme will need to be updated manually
+with `theme-magic-from-emacs'."
   (mapc (lambda (func)
           (advice-remove func 'theme-magic-from-emacs--wrapper))
         theme-magic--theming-functions))
