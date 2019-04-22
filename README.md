@@ -38,7 +38,7 @@ First, you must install [Pywal](https://github.com/dylanaraps/pywal) as a depend
 
 ### Installing `theme-magic` from MELPA
 
-`theme-magic` is [available](http://melpa.org/#/theme-magic) on MELPA. Follow the [instructions]() to set up MELPA.
+`theme-magic` is [available](http://melpa.org/#/theme-magic) on MELPA. Follow the [instructions](https://melpa.org/#/getting-started) to set up MELPA.
 
 Install `theme-magic` with `M-x` `package-install` `RET` `theme-magic` `RET`.
 
