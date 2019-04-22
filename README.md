@@ -32,25 +32,15 @@ You can disable it with `(theme-magic-disable-auto-update)`.
 
 ## Installation
 
+### Dependencies
+
 First, you must install [Pywal](https://github.com/dylanaraps/pywal) as a dependency. Check if it's installed by calling `wal` in a shell. Make sure Python is installed too.
 
-`theme-magic` is not yet available on MELPA. For now, I recommend installing directly from GitHub with [Quelpa](https://framagit.org/steckerhalter/quelpa). Evaluate the following:
-```emacs-lisp
-;; Install quelpa
-(package-install 'quelpa)
-(require 'quelpa)
-;; Use quelpa to build the repo
-(quelpa '(theme-magic
-          :fetcher github
-          :repo "jcaw/theme-magic.el"
-          ;; You have to explicitly download the python scripts folder
-          :files (:defaults "python")))
-```
+### Installing `theme-magic` from MELPA
 
-Then require as normal:
-```emacs-lisp
-(require 'theme-magic)
-```
+`theme-magic` is [available](http://melpa.org/#/theme-magic) on MELPA. Follow the [instructions]() to set up MELPA.
+
+Install `theme-magic` with `M-x` `package-install` `RET` `theme-magic` `RET`.
 
 ### Restoring Your Theme
 
