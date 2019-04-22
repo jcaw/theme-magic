@@ -56,13 +56,13 @@ wal -R
 
 ### Setting Your Wallpaper
 
-Pywal was designed to generate a color scheme that matches your wallpaper. If you wish to set a wallpaper, it's best to do that first. Call this command in a shell:
+Pywal was designed to generate a color scheme that matches your wallpaper. Because of some quirks in how Pywal works, you have to set the wallpaper before exporting a theme from Emacs, or it will not be saved. Call this command in a shell:
 
 ```shell
 wal -i "path/to/wallpaper.png"
 ```
 
-Pywal will set your wallpaper and save it in its cache. Now, apply your Emacs theme:
+Pywal will set your wallpaper and save it in its cache. Now, you can apply your Emacs theme:
 
 ```emacs
 M-x theme-magic-from-emacs
