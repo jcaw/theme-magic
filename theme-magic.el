@@ -86,6 +86,113 @@
   "Name to use for pywal's output buffer.")
 
 
+(defvar theme-magic--preferred-extracted-colors
+  '(
+    ;; Black
+    ;; This is a special face - it should inherit from the background.
+    (0 . ((face-background 'default)))
+    ;; Red
+    ;; The red color is special - it should actually be red whenever
+    ;; possible, because it will likely be used to denote errors.
+    (1 . (;; Errors tend to be red.
+          (face-foreground 'error)))
+    ;; Green
+    (2 . ((face-foreground 'font-lock-string-face)))
+    ;; Yellow
+    (3 . ((face-foreground 'font-lock-warning-face)
+          (face-foreground 'warning)))
+    ;; Blue
+    ;; Treat this as the most common color. Treat cyan as the second most
+    ;; common.
+    (4 . (;; The function name face tends to be the most dominant color.
+          (face-foreground 'font-lock-function-name-face)
+          ;; If function names aren't highlighted, use the keyword face?
+          (face-foreground 'font-lock-keyword-face)
+          ;; The builtin face matches in at least one theme
+          ;; TODO: Does it match builtin in all themes?
+          ;; Answer: not in zenburn.
+          (face-foreground 'font-lock-builtin-face)))
+    ;; Purple
+    (5 . ((face-foreground 'font-lock-constant-face)))
+    ;; Cyan
+    (6 . ((face-foreground 'font-lock-keyword-face)))
+    ;; White
+    (7 . ((face-foreground 'default)))
+    ;; Black-light
+    (8 . ((face-foreground 'shadow)
+          (face-foreground 'font-lock-comment-face)))
+    ;; The rest of the light faces should inherit from their regular
+    ;; equivalents.
+    )
+  "How should we extract each color?
+
+This should be an alist of font numbers, mapped to a list of
+colors. Each color should be a form that can be evaluated. For
+example:
+
+   '((1 . ((font-foreground 'preferred-face)
+           (font-background 'backup-face))))
+
+")
+
+
+(defvar theme-magic--fallback-extracted-colors
+  '(
+    ;; These two faces are the dominant faces. Use them up first.
+    (face-foreground 'font-lock-keyword-face)
+    (face-foreground 'font-lock-function-name-face)
+
+    (face-foreground 'font-lock-variable-name-face)
+    (face-foreground 'font-lock-constant-face)
+    (face-foreground 'font-lock-doc-face)
+    (face-foreground 'font-lock-string-face)
+    (face-foreground 'font-lock-type-face)
+
+    ;; These four faces tend to be similar in color
+    (face-foreground 'font-lock-negation-char-face)
+    (face-foreground 'font-lock-preprocessor-face)
+    (face-foreground 'font-lock-regexp-grouping-backslash)
+    (face-foreground 'font-lock-regexp-grouping-construct)
+
+    ;; Other faces of interest
+    (face-foreground 'button)
+    (face-foreground 'custom-variable-tag)
+    (face-foreground 'message-cited-text)
+    (face-foreground 'message-header-cc)
+    (face-foreground 'message-cited-text)
+    (face-foreground 'message-header-cc)
+    (face-foreground 'message-header-name)
+    (face-foreground 'message-header-newsgroups)
+    (face-foreground 'message-header-other)
+    (face-foreground 'message-header-subject)
+    (face-foreground 'message-header-to)
+    (face-foreground 'message-header-xheader)
+    (face-foreground 'message-mml)
+    (face-foreground 'message-separator)
+    (face-foreground 'success)
+
+    ;; TODO: Maybe include the mode line colors?
+
+    ;; Some font-lock faces that should not be used as fallbacks.
+    ;; font-lock-builtin-face
+    ;; font-lock-comment-delimiter-face
+    ;; font-lock-comment-face
+    ;; font-lock-warning-face
+    )
+  "Colors to fall back on if the preferred faces are invalid.
+
+Each color should be a form that can be evaluated. For example:
+
+    '(face-foreground 'button)
+
+If a color cannot be filled by one of the preferred faces, this
+list will be scanned for the first valid color. That face will be
+used instead. This list is ordered best to worst.
+
+A valid color is defined as a color that hasn't been used
+already." )
+
+
 (defun theme-magic--color-name-to-hex (color-name)
   "Convert a `COLOR-NAME' into a 6-digit hex value.
 
