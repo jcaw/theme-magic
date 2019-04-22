@@ -21,14 +21,14 @@
 
 Just call `M-x` `theme-magic-from-emacs`. theme-magic will extract the colors from your Emacs theme and apply them to the rest of Linux with [Pywal](https://github.com/dylanaraps/pywal).
 
-If you want the Linux theme to update automatically whenever the Emacs theme is changed, call `(theme-magic-enable-auto-update)`. For example:
+If you want the Linux theme to update automatically whenever the Emacs theme is changed, enable the global minor mode `theme-magic-export-theme-mode`. For example:
 
 ```emacs-lisp
 (require 'theme-magic)
-(theme-magic-enable-auto-update)
+(theme-magic-export-theme-mode)
 ```
 
-You can disable it with `(theme-magic-disable-auto-update)`.
+You can disable auto-updating by disabling the minor mode.
 
 ## Installation
 
