@@ -42,6 +42,10 @@ First, you must install [Pywal](https://github.com/dylanaraps/pywal) as a depend
 
 Install `theme-magic` with `M-x` `package-install` `RET` `theme-magic` `RET`.
 
+---
+
+## Footnotes
+
 ### Restoring Your Theme
 
 [Pywal](https://github.com/dylanaraps/pywal) only applies your theme to the current session. See its documentation for details. To restore the last theme, call `wal -R` in the shell. To restore your theme automatically, add the following to your `.xprofile` (or whichever dotfile is loaded automatically once your desktop starts up):
