@@ -193,6 +193,44 @@ A valid color is defined as a color that hasn't been used
 already." )
 
 
+(defvar theme-magic--color-priority
+  ;; Split over multiple lines for easy commenting and reordering.
+  '(
+    ;; Black (background)
+    ;; Black and white _must_ be set correctly, so they're first.
+    0
+    ;; White
+    7
+    ;; Red
+    ;;
+    ;; Red is special because it's used for warnings. It's important that red
+    ;; has a high chance of nabbing the error color, so we define it quickly.
+    ;; Note that this does cause some conflicts, e.g. in `monokai', where the
+    ;; error color is also used for keywords.
+    ;;
+    ;; TODO: Maybe add a special fallback for red, that evaluates whether a
+    ;;   color has a sufficient red content to be used as a warning?
+    1
+    ;; Black-light
+    8
+    ;; Cyan - seems most popular
+    6
+    ;; Blue - also seems popular
+    4
+    ;; Yellow
+    3
+    ;; Purple
+    5
+    ;; Green
+    2
+    )
+  "The order in which to assign extracted colors to ANSI values.
+
+When extracting colors, the colors higher on this list get first
+pick. If a later color runs into a duplicate, it will have to use
+a fallback color.")
+
+
 (defun theme-magic--color-name-to-hex (color-name)
   "Convert a `COLOR-NAME' into a 6-digit hex value.
 
@@ -316,6 +354,109 @@ handling."
     ;; list - this will also serve that purpose.)
     (mapcar 'theme-magic--color-name-to-hex
             ansi-colors-vector)))
+
+
+(defun theme-magic--get-preferred-colors (ansi-index)
+  (mapcar (lambda (color-form)
+            (theme-magic--color-name-to-hex
+             (eval color-form)))
+          (alist-get ansi-index theme-magic--preferred-extracted-colors)))
+
+
+(defun theme-magic--color-taken (color existing-colors)
+  (catch 'color-taken
+    (mapc (lambda (existing-color)
+            ;; `existing-color' will be a cons cell, because it comes from an
+            ;; alist. Take the `cdr' - this is the color string.
+            (when (string= (cdr existing-color) color)
+              (throw 'color-taken t)))
+          existing-colors)
+    nil))
+
+
+(defun theme-magic--extract-color (ansi-index existing-colors)
+  (let ((possible-colors (theme-magic--get-preferred-colors ansi-index)))
+    ;; Check each color in turn to see if it's a new color. If it is, stop
+    ;; immediately and return it.
+    (catch 'new-color
+      (mapc (lambda (possible-color)
+              (unless (theme-magic--color-taken possible-color existing-colors)
+                (throw 'new-color possible-color)))
+            possible-colors)
+      ;; If no color could be extracted, return nil for now.
+      nil)))
+
+
+(defun theme-magic--extract-fallback-color (ansi-index existing-colors)
+  (catch 'new-color
+    (mapc (lambda (possible-color-form)
+            (let ((possible-color (theme-magic--color-name-to-hex
+                                   (eval possible-color-form))))
+              (unless (theme-magic--color-taken possible-color existing-colors)
+                (throw 'new-color possible-color))))
+          theme-magic--fallback-extracted-colors)
+    nil))
+
+
+(defun theme-magic--force-extract-color (ansi-index)
+  (theme-magic--color-name-to-hex
+   (eval (car (alist-get ansi-index theme-magic--preferred-extracted-colors)))))
+
+
+(defun theme-magic--auto-extract-16-colors ()
+  ;; Note that color extraction is worst-case speed complexity o(n*16), where
+  ;; `n' is (roughly) the number of color options (preferred and fallback). This
+  ;; scales faster than O(n) but it should still be negligible.
+  ;;
+  ;; This can be easily reduced by ignoring colors we've already tried to fall
+  ;; back to, but with 16 colors, it's not worth it.
+  (let (
+        ;; `extracted-colors' is an alist mapping ANSI numbers to colors.
+        (extracted-colors '())
+        )
+    ;; Go through the colors in the preferred order, and attempt to extract a
+    ;; color for each.
+    (mapc (lambda (ansi-index)
+            (push (cons ansi-index
+                        (theme-magic--extract-color ansi-index extracted-colors))
+                  extracted-colors))
+          theme-magic--color-priority)
+
+    ;; It may not have been possible to find unique colors for every index. We
+    ;; go through any indexes that were missed, and try to find a fallback
+    ;; color.
+    ;;
+    ;; Note that we do this as a separate process, *after* the initial color
+    ;; assignments. This is because we don't want nil colors to go through the
+    ;; fallback list and accidentally take the primary choices of later colors.
+    ;; Every color should have a chance at its primary choice *first*. Only then
+    ;; do we go back and fill in the blanks.
+    (mapc (lambda (ansi-index)
+            (unless (alist-get ansi-index extracted-colors)
+              ;; TODO: Is this an in-place deletion?
+              (assq-delete-all ansi-index extracted-colors)
+              (push (cons ansi-index
+                          (or
+                           ;; Try and find an unused color in the fallback colors.
+                           (theme-magic--extract-fallback-color ansi-index extracted-colors)
+                           ;; If we couldn't find a unique color, fall back to
+                           ;; the best duplicate color.
+                           (theme-magic--force-extract-color ansi-index)))
+                    extracted-colors)))
+          theme-magic--color-priority)
+
+    ;; We now have an alist of the first 9 ANSI indexes, mapped to colors. We
+    ;; need to return a straight list of 16 colors. Extract the colors one by
+    ;; one.
+    (append (mapcar (lambda (index)
+                      (alist-get index extracted-colors))
+                    '(0 1 2 3 4 5 6 7 8))
+            ;; For now, colors 9-15 (the "light" color variants) should just
+            ;; mirror their non-light counterparts.
+            (mapcar (lambda (index)
+                      ;; Subtract 8 to get the dark version of the light index.
+                      (alist-get (- index 8) extracted-colors))
+                    '(9 10 11 12 13 14 15)))))
 
 
 ;;;###autoload
