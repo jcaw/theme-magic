@@ -234,7 +234,11 @@ a fallback color.")
 (defun theme-magic--color-name-to-hex (color-name)
   "Convert a `COLOR-NAME' into a 6-digit hex value.
 
-E.g. \"Orange\" -> \"#FFA500\"."
+E.g. \"Orange\" -> \"#FFA500\".
+
+Note that this conversion method IS LOSSY. If you supply a hex
+name as the color-name, it may spit out a slightly different hex
+value due to rounding errors."
   ;; Upcase result to make it neat.
   (upcase
    ;; Have to convert to rgb first, *then* convert back to hex.
