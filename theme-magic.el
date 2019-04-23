@@ -239,15 +239,17 @@ E.g. \"Orange\" -> \"#FFA500\".
 Note that this conversion method IS LOSSY. If you supply a hex
 name as the color-name, it may spit out a slightly different hex
 value due to rounding errors."
-  ;; Upcase result to make it neat.
-  (upcase
-   ;; Have to convert to rgb first, *then* convert back to hex.
-     (apply
-      'color-rgb-to-hex
-      (append (color-name-to-rgb
-               color-name)
-              ;; We have to specify "2" as the fourth argument
-              '(2)))))
+  (if color-name
+      ;; Upcase result to make it neat.
+      (upcase
+       ;; Have to convert to rgb first, *then* convert back to hex.
+       (apply
+        'color-rgb-to-hex
+        (append (color-name-to-rgb
+                 color-name)
+                ;; We have to specify "2" as the fourth argument
+                '(2))))
+    nil))
 
 
 (defun theme-magic--extract-background-color ()
