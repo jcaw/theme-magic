@@ -380,7 +380,12 @@ doesn't provide any wrapper feedback to the user."
 
 Provides some wrapper feedback to the user, plus some error
 handling."
-  (message "Applying colors: %s" colors)
+  (message "Applying colors: %s"
+           ;; Number the colors to make it clearer for the user which color is
+           ;; being applied where.
+           (mapcar* #'cons
+                    (number-sequence 0 (length colors))
+                    colors))
   (if (zerop (theme-magic--call-pywal-process colors))
       (message "Successfully applied colors!")
     (user-error "There was an error applying the colors. See buffer \"*pywal*\" for details.")))
