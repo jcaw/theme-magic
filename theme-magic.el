@@ -104,18 +104,18 @@
     ;; Blue
     ;; Treat this as the most common color. Treat cyan as the second most
     ;; common.
-    (4 . (;; The function name face tends to be the most dominant color.
-          (face-foreground 'font-lock-function-name-face)
-          ;; If function names aren't highlighted, use the keyword face?
-          (face-foreground 'font-lock-keyword-face)
-          ;; The builtin face matches in at least one theme
-          ;; TODO: Does it match builtin in all themes?
-          ;; Answer: not in zenburn.
-          (face-foreground 'font-lock-builtin-face)))
+    (4 . ((face-foreground 'font-lock-keyword-face)
+          (face-foreground 'font-lock-constant-face)))
     ;; Purple
     (5 . ((face-foreground 'font-lock-constant-face)))
     ;; Cyan
-    (6 . ((face-foreground 'font-lock-keyword-face)))
+    (6 . (;; The function name face tends to be the most dominant color.
+          (face-foreground 'font-lock-function-name-face)
+          ;; The builtin face matches in at least one theme
+          ;; TODO: Does it match builtin in all themes?
+          ;; Answer: not in zenburn.
+          (face-foreground 'font-lock-builtin-face)
+          (face-foreground 'font-lock-constant-face)))
     ;; White
     (7 . ((face-foreground 'default)))
     ;; Black-light
