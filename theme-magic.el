@@ -270,6 +270,16 @@ value due to rounding errors."
    (face-foreground 'default)))
 
 
+(defun theme-magic--safe-eval (form)
+  "Call `eval' on `FORM', catching any errors.
+
+If an error is thrown, just return nil. Does not propagate the
+error. Does not interrupt execution."
+  (condition-case nil
+      (eval form)
+    (error nil)))
+
+
 (defun theme-magic--check-dependencies ()
   "Ensure dependencies are installed. Throws an error if not.
 
@@ -365,7 +375,7 @@ handling."
 (defun theme-magic--get-preferred-colors (ansi-index)
   (mapcar (lambda (color-form)
             (theme-magic--color-name-to-hex
-             (eval color-form)))
+             (theme-magic--safe-eval color-form)))
           (alist-get ansi-index theme-magic--preferred-extracted-colors)))
 
 
@@ -386,7 +396,8 @@ handling."
     ;; immediately and return it.
     (catch 'new-color
       (mapc (lambda (possible-color)
-              (unless (theme-magic--color-taken possible-color existing-colors)
+              (unless (and possible-color
+                           (theme-magic--color-taken possible-color existing-colors))
                 (throw 'new-color possible-color)))
             possible-colors)
       ;; If no color could be extracted, return nil for now.
@@ -397,8 +408,9 @@ handling."
   (catch 'new-color
     (mapc (lambda (possible-color-form)
             (let ((possible-color (theme-magic--color-name-to-hex
-                                   (eval possible-color-form))))
-              (unless (theme-magic--color-taken possible-color existing-colors)
+                                   (theme-magic--safe-eval possible-color-form))))
+              (unless (and possible-color
+                           (theme-magic--color-taken possible-color existing-colors))
                 (throw 'new-color possible-color))))
           theme-magic--fallback-extracted-colors)
     nil))
@@ -406,7 +418,14 @@ handling."
 
 (defun theme-magic--force-extract-color (ansi-index)
   (theme-magic--color-name-to-hex
-   (eval (car (alist-get ansi-index theme-magic--preferred-extracted-colors)))))
+   (or (theme-magic--safe-eval (car (alist-get ansi-index theme-magic--preferred-extracted-colors)))
+       ;; It's possible even the above will return nil, because the preferred
+       ;; color form fails to evaluate. As a final fallback, just use the ANSI
+       ;; color.
+       (nth ansi-index (theme-magic--16-colors-from-ansi))
+       ;; Final failsafe - should never get here, but just in case, a neutral
+       ;; color.
+       "#888888")))
 
 
 (defun theme-magic--auto-extract-16-colors ()
