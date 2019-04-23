@@ -95,7 +95,13 @@
     ;; The red color is special - it should actually be red whenever
     ;; possible, because it will likely be used to denote errors.
     (1 . (;; Errors tend to be red.
-          (face-foreground 'error)))
+          (face-foreground 'error)
+          ;; The warning face hopefully also looks like an error. But, it is
+          ;; less likely to be red.
+          (face-foreground 'font-lock-warning-face)
+          ;; Some themes color the background of the warning face instead of the
+          ;; foreground.
+          (face-background 'font-lock-warning-face)))
     ;; Green
     (2 . ((face-foreground 'font-lock-string-face)))
     ;; Yellow
