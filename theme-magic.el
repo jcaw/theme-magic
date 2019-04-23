@@ -231,6 +231,12 @@ pick. If a later color runs into a duplicate, it will have to use
 a fallback color.")
 
 
+(defvar theme-magic--same-color-threshold 0.02
+  "Difference in values at which two colors should be considered the same."
+  ;; TODO: Explain same-color-threshold properly
+  )
+
+
 (defun theme-magic--color-name-to-hex (color-name)
   "Convert a `COLOR-NAME' into a 6-digit hex value.
 
@@ -250,6 +256,34 @@ value due to rounding errors."
                 ;; We have to specify "2" as the fourth argument
                 '(2))))
     nil))
+
+
+(defun theme-magic--color-difference (color1 color2)
+  (let ((color1-rgb (color-name-to-rgb color1))
+        (color2-rgb (color-name-to-rgb color2))
+        (max-difference 0))
+    ;; I want to avoid accidentally comparing alphas. Explicitly compare the
+    ;; red, green and blue.
+    (max (abs (- (nth 0 color1-rgb) (nth 0 color2-rgb)))
+         (abs (- (nth 1 color1-rgb) (nth 1 color2-rgb)))
+         (abs (- (nth 2 color1-rgb) (nth 2 color2-rgb))))))
+
+
+(defun theme-magic--colors-match (color1 color2)
+  "Check if two colors are very similar - whether they look the same.
+
+If they look the same (are minimally different), they match.
+
+Returns `t' if they match, `nil' if not."
+  ;; Failsafe - only compare if both colors are defined.
+  (if (and color1 color2)
+      (progn
+        ;; The colors are only the same if the difference is within the acceptable
+        ;; threshold.
+        (<= (theme-magic--color-difference color1 color2)
+            theme-magic--same-color-threshold))
+    ;; One of the colors is nil.
+    (not (and color1 color2))))
 
 
 (defun theme-magic--extract-background-color ()
@@ -384,7 +418,7 @@ handling."
     (mapc (lambda (existing-color)
             ;; `existing-color' will be a cons cell, because it comes from an
             ;; alist. Take the `cdr' - this is the color string.
-            (when (string= (cdr existing-color) color)
+            (when (theme-magic--colors-match (cdr existing-color) color)
               (throw 'color-taken t)))
           existing-colors)
     nil))
