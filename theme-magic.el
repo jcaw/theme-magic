@@ -282,8 +282,9 @@ Returns `t' if they match, `nil' if not."
         ;; threshold.
         (<= (theme-magic--color-difference color1 color2)
             theme-magic--same-color-threshold))
-    ;; One of the colors is nil.
-    (not (and color1 color2))))
+    ;; If one of the colors is nil, they don't match. Even if both are nil, they
+    ;; don't match.
+    nil))
 
 
 (defun theme-magic--extract-background-color ()
@@ -443,8 +444,9 @@ handling."
     (mapc (lambda (possible-color-form)
             (let ((possible-color (theme-magic--color-name-to-hex
                                    (theme-magic--safe-eval possible-color-form))))
-              (unless (and possible-color
-                           (theme-magic--color-taken possible-color existing-colors))
+              ;; When the color exists and is not taken, we have a match.
+              (when (and possible-color
+                         (not (theme-magic--color-taken possible-color existing-colors)))
                 (throw 'new-color possible-color))))
           theme-magic--fallback-extracted-colors)
     nil))
