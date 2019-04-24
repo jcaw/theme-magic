@@ -218,28 +218,28 @@ already." )
     0
     ;; White
     7
+    ;; Black-light
+    8
+    ;; Blue - seems most popular
+    4
+    ;; Cyan - also seems popular
+    6
     ;; Red
     ;;
     ;; Red is special because it's used for warnings. It's important that red
-    ;; has a high chance of nabbing the error color, so we define it quickly.
-    ;; Note that this does cause some conflicts, e.g. in `monokai', where the
-    ;; error color is also used for keywords.
+    ;; has a high chance of nabbing the error color, so we define it relatively
+    ;; quickly.
     ;;
-    ;; TODO: Maybe add a special fallback for red, that evaluates whether a
-    ;;   color has a sufficient red content to be used as a warning?
+    ;; Note that this causes conflicts, e.g. in `monokai', where red is used for
+    ;; errors and keywords. Nabbing red too early makes the output look
+    ;; terrible.
     1
-    ;; Black-light
-    8
-    ;; Cyan - seems most popular
-    6
-    ;; Blue - also seems popular
-    4
-    ;; Yellow
-    3
+    ;; Green - seems to be third most popular
+    2
     ;; Purple
     5
-    ;; Green
-    2
+    ;; Yellow
+    3
     )
   "The order in which to assign extracted colors to ANSI values.
 
