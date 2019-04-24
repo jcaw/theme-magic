@@ -139,46 +139,44 @@ example:
 
 (defvar theme-magic--fallback-extracted-colors
   '(
-    ;; These two faces are the dominant faces. Use them up first.
+    ;; These faces are ordered by preferred dominance. Colors at the top will be
+    ;; placed in more dominant color slots.
+    ;; ------------------------------------------------------------------------
+
+    ;; These two faces are the two primary, dominant faces. Use them up first.
     (face-foreground 'font-lock-keyword-face)
     (face-foreground 'font-lock-function-name-face)
 
-    (face-foreground 'font-lock-variable-name-face)
-    (face-foreground 'font-lock-constant-face)
-    (face-foreground 'font-lock-doc-face)
+    ;; Some themes use a colorful comment face, such as `spacemacs-dark' and
+    ;; `zenburn'. These colors consequently become very dominant. Use the
+    ;; comment face, but only if it's colorful.
+    (theme-magic--filter-unsaturated
+     (face-foreground 'font-lock-comment-face))
+    ;; Strings tend to be common (and long), so the string face becomes
+    ;; dominant.
     (face-foreground 'font-lock-string-face)
-    (face-foreground 'font-lock-type-face)
-
-    ;; These four faces tend to be similar in color
-    (face-foreground 'font-lock-negation-char-face)
-    (face-foreground 'font-lock-preprocessor-face)
-    (face-foreground 'font-lock-regexp-grouping-backslash)
-    (face-foreground 'font-lock-regexp-grouping-construct)
+    ;; Docstrings are common too (perhaps more common) but docstring colors tend
+    ;; to be uglier than string colors. We therefore demote it, slightly.
+    (theme-magic--filter-unsaturated
+     (face-foreground 'font-lock-doc-face))
+    ;; variables, constants and types are peppered throughout code. These colors
+    ;; are less common, but are still defining colors of the color scheme.
+    ;;
+    ;; HACK: Some doom themes set the variable name to white
+    ;;   (e.g. `doom-vibrant'). Only accept colorful variable names.
+    (theme-magic--filter-unsaturated
+     (face-foreground 'font-lock-variable-name-face))
+    (face-foreground 'font-lock-constant-face)
+    ;; HACK: At least one doom theme sets the type face to be white too
+    ;;   (e.g. `doom-peacock').
+    (theme-magic--filter-unsaturated
+     (face-foreground 'font-lock-type-face))
 
     ;; Other faces of interest
+    (face-foreground 'link)
     (face-foreground 'button)
     (face-foreground 'custom-variable-tag)
-    (face-foreground 'message-cited-text)
-    (face-foreground 'message-header-cc)
-    (face-foreground 'message-cited-text)
-    (face-foreground 'message-header-cc)
-    (face-foreground 'message-header-name)
-    (face-foreground 'message-header-newsgroups)
-    (face-foreground 'message-header-other)
-    (face-foreground 'message-header-subject)
-    (face-foreground 'message-header-to)
-    (face-foreground 'message-header-xheader)
-    (face-foreground 'message-mml)
-    (face-foreground 'message-separator)
     (face-foreground 'success)
-
-    ;; TODO: Maybe include the mode line colors?
-
-    ;; Some font-lock faces that should not be used as fallbacks.
-    ;; font-lock-builtin-face
-    ;; font-lock-comment-delimiter-face
-    ;; font-lock-comment-face
-    ;; font-lock-warning-face
 
     ;; As a last resort, use the ansi colors themselves. These should only be
     ;; used if all the other colors have been used up.
