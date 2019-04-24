@@ -248,10 +248,17 @@ pick. If a later color runs into a duplicate, it will have to use
 a fallback color.")
 
 
-(defvar theme-magic--same-color-threshold 0.02
+(defvar theme-magic--same-color-threshold 0.1
   "Difference in values at which two colors should be considered the same."
   ;; TODO: Explain same-color-threshold properly
   )
+
+
+(defvar theme-magic--saturated-color-threshold 0.1
+  "Threshold at which a color counts as \"saturated\".
+
+This corresponds to the saturation component of the HSV color
+value.")
 
 
 (defun theme-magic--color-name-to-hex (color-name)
@@ -284,6 +291,38 @@ value due to rounding errors."
     (max (abs (- (nth 0 color1-rgb) (nth 0 color2-rgb)))
          (abs (- (nth 1 color1-rgb) (nth 1 color2-rgb)))
          (abs (- (nth 2 color1-rgb) (nth 2 color2-rgb))))))
+
+
+(defun theme-magic--measure-saturation (color)
+  "How saturated is `COLOR' on a scale of 0-1?
+
+Uses the saturation component of HSV."
+  (if color
+      ;; Use HSV over HSL for more consistent results on light colors.
+      (nth 1 (apply 'color-rgb-to-hsv
+                    (color-name-to-rgb color)))
+    0))
+
+
+(defun theme-magic--filter-unsaturated (color)
+  "Return color iff `COLOR' is not close to greyscale.
+
+Otherwise, return `nil'.
+
+If color is saturated enough, it's ok. Otherwise, treat it as
+greyscale."
+  ;; TODO: Remove saturation messages.
+  (if (> (theme-magic--measure-saturation color)
+         theme-magic--saturated-color-threshold)
+      (progn
+        (message "Saturation for %s: %s"
+                 color
+                 (theme-magic--measure-saturation color))
+        color)
+    (message "Not saturated enough; %s: %s"
+             color
+             (theme-magic--measure-saturation color))
+    nil))
 
 
 (defun theme-magic--colors-match (color1 color2)
