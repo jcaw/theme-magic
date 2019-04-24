@@ -600,7 +600,7 @@ Thus, it only works with *indexes 0-7* (inclusive)."
   ;; we want to do it up front.
   (theme-magic--check-dependencies)
   (theme-magic--apply-colors-with-pywal
-   (theme-magic--16-colors-from-ansi)))
+   (theme-magic--auto-extract-16-colors)))
 
 
 (defun theme-magic-from-emacs--wrapper (&rest _)
