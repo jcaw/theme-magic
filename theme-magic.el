@@ -463,8 +463,8 @@ Thus, it only works with *indexes 0-7* (inclusive)."
     ;; immediately and return it.
     (catch 'new-color
       (mapc (lambda (possible-color)
-              (unless (and possible-color
-                           (theme-magic--color-taken possible-color existing-colors))
+              (when (and possible-color
+                         (not (theme-magic--color-taken possible-color existing-colors)))
                 (throw 'new-color possible-color)))
             possible-colors)
       ;; If no color could be extracted, return nil for now.
