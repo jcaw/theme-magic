@@ -86,19 +86,254 @@
   "Name to use for pywal's output buffer.")
 
 
+(defvar theme-magic--preferred-extracted-colors
+  '(
+    ;; Black
+    ;; This is a special face - it should match the background.
+    (0 . ((face-background 'default)))
+    ;; Red
+    ;; The red color should look like an error, because it is probably going
+    ;; to be used to denote errors.
+    (1 . (
+          ;; The error face is best. The error face also tends to actually
+          ;; be red.
+          (face-foreground 'error)
+          ;; Sometimes, errors are denoted by their background color.
+          (face-background 'error)
+          ;; The warning face hopefully also looks like an error. But, it is
+          ;; less likely to be red.
+          (face-foreground 'warning)
+          ;; Likewise, sometimes warnings are denoted by their background.
+          (face-background 'warning)))
+    ;; Yellow
+    ;; Try to give yellow a warning face, if available.
+    (3 . ((face-foreground 'font-lock-warning-face)
+          (face-foreground 'warning)))
+    ;; Cyan
+    ;; Cyan needs to be the secondary dominant face.
+    (6 . ((face-foreground 'font-lock-function-name-face)
+          (face-foreground 'font-lock-variable-name-face)))
+    ;; White
+    ;; Special color - it should match normal text.
+    (7 . ((face-foreground 'default)))
+    ;; Black-light
+    ;; Special color - it is used for text that's faded, e.g. in code
+    ;; comments (but note that while most themes make shadow a faded color,
+    ;; the comment face can sometimes be vibrant).
+    (8 . ((face-foreground 'shadow)
+          (face-foreground 'font-lock-comment-face)))
+    ;; The rest of the light faces should inherit from their regular
+    ;; equivalents.
+    )
+  "How should we extract each color?
+
+This should be an alist of font numbers, mapped to a list of
+colors. Each color should be a form that can be evaluated. For
+example:
+
+   '((1 . ((font-foreground 'preferred-face)
+           (font-background 'backup-face))))
+
+")
+
+
+(defvar theme-magic--fallback-extracted-colors
+  '(
+    ;; These faces are ordered by preferred dominance. Colors at the top will be
+    ;; placed in more dominant color slots.
+    ;; ------------------------------------------------------------------------
+
+    ;; These two faces are the two primary, dominant faces. Use them up first.
+    (face-foreground 'font-lock-keyword-face)
+    (face-foreground 'font-lock-function-name-face)
+
+    ;; Some themes use a colorful comment face, such as `spacemacs-dark' and
+    ;; `zenburn'. These colors consequently become very dominant. Use the
+    ;; comment face, but only if it's colorful.
+    (theme-magic--filter-unsaturated
+     (face-foreground 'font-lock-comment-face))
+    ;; Strings tend to be common (and long), so the string face becomes
+    ;; dominant.
+    (face-foreground 'font-lock-string-face)
+    ;; Docstrings are common too (perhaps more common) but docstring colors tend
+    ;; to be uglier than string colors. We therefore demote it, slightly.
+    (theme-magic--filter-unsaturated
+     (face-foreground 'font-lock-doc-face))
+    ;; variables, constants and types are peppered throughout code. These colors
+    ;; are less common, but are still defining colors of the color scheme.
+    ;;
+    ;; HACK: Some doom themes set the variable name to white
+    ;;   (e.g. `doom-vibrant'). Only accept colorful variable names.
+    (theme-magic--filter-unsaturated
+     (face-foreground 'font-lock-variable-name-face))
+    (face-foreground 'font-lock-constant-face)
+    ;; HACK: At least one doom theme sets the type face to be white too
+    ;;   (e.g. `doom-peacock').
+    (theme-magic--filter-unsaturated
+     (face-foreground 'font-lock-type-face))
+
+    ;; Other faces of interest
+    (face-foreground 'link)
+    (face-foreground 'button)
+    (face-foreground 'custom-variable-tag)
+    (face-foreground 'success)
+
+    ;; As a last resort, use the ansi colors themselves. These should only be
+    ;; used if all the other colors have been used up.
+    ;;
+    ;; Don't use colors 0 or 7 (black and white).
+    (theme-magic--get-ansi-color 4)  ; Blue
+    (theme-magic--get-ansi-color 6)  ; Cyan
+    (theme-magic--get-ansi-color 3)  ; Yellow
+    (theme-magic--get-ansi-color 5)  ; Magenta
+    (theme-magic--get-ansi-color 2)  ; Green
+    (theme-magic--get-ansi-color 1)  ; Red
+    )
+  "Colors to fall back on if the preferred faces are invalid.
+
+Each color should be a form that can be evaluated. For example:
+
+    '(face-foreground 'button)
+
+If a color cannot be filled by one of the preferred faces, this
+list will be scanned for the first valid color. That face will be
+used instead. This list is ordered best to worst.
+
+A valid color is defined as a color that hasn't been used
+already." )
+
+
+(defvar theme-magic--color-priority
+  ;; Split over multiple lines for easy commenting and reordering.
+  '(
+    ;; Black (background)
+    ;; Black and white _must_ be set correctly, so they're first.
+    0
+    ;; White
+    7
+    ;; Black-light
+    8
+    ;; Blue - seems most popular
+    4
+    ;; Cyan - also seems popular
+    6
+    ;; Red
+    ;;
+    ;; Red is special because it's used for warnings. It's important that red
+    ;; has a high chance of nabbing the error color, so we define it relatively
+    ;; quickly.
+    ;;
+    ;; Note that this causes conflicts, e.g. in `monokai', where red is used for
+    ;; errors and keywords. Nabbing red too early makes the output look
+    ;; terrible.
+    1
+    ;; Green - seems to be third most popular
+    2
+    ;; Purple
+    5
+    ;; Yellow
+    3
+    )
+  "The order in which to assign extracted colors to ANSI values.
+
+When extracting colors, the colors higher on this list get first
+pick. If a later color runs into a duplicate, it will have to use
+a fallback color.")
+
+
+(defvar theme-magic--same-color-threshold 0.1
+  "Difference in values at which two colors should be considered the same."
+  ;; TODO: Explain same-color-threshold properly
+  )
+
+
+(defvar theme-magic--saturated-color-threshold 0.1
+  "Threshold at which a color counts as \"saturated\".
+
+This corresponds to the saturation component of the HSV color
+value.")
+
+
 (defun theme-magic--color-name-to-hex (color-name)
   "Convert a `COLOR-NAME' into a 6-digit hex value.
 
-E.g. \"Orange\" -> \"#FFA500\"."
-  ;; Upcase result to make it neat.
-  (upcase
-   ;; Have to convert to rgb first, *then* convert back to hex.
-     (apply
-      'color-rgb-to-hex
-      (append (color-name-to-rgb
-               color-name)
-              ;; We have to specify "2" as the fourth argument
-              '(2)))))
+E.g. \"Orange\" -> \"#FFA500\".
+
+Note that this conversion method IS LOSSY. If you supply a hex
+name as the color-name, it may spit out a slightly different hex
+value due to rounding errors."
+  (if color-name
+      ;; Upcase result to make it neat.
+      (upcase
+       ;; Have to convert to rgb first, *then* convert back to hex.
+       (apply
+        'color-rgb-to-hex
+        (append (color-name-to-rgb
+                 color-name)
+                ;; We have to specify "2" as the fourth argument
+                '(2))))
+    nil))
+
+
+(defun theme-magic--color-difference (color1 color2)
+  (let ((color1-rgb (color-name-to-rgb color1))
+        (color2-rgb (color-name-to-rgb color2))
+        (max-difference 0))
+    ;; I want to avoid accidentally comparing alphas. Explicitly compare only
+    ;; red, green and blue.
+    (max (abs (- (nth 0 color1-rgb) (nth 0 color2-rgb)))
+         (abs (- (nth 1 color1-rgb) (nth 1 color2-rgb)))
+         (abs (- (nth 2 color1-rgb) (nth 2 color2-rgb))))))
+
+
+(defun theme-magic--measure-saturation (color)
+  "How saturated is `COLOR' on a scale of 0-1?
+
+Uses the saturation component of HSV."
+  (if color
+      ;; Use HSV over HSL for more consistent results on light colors.
+      (nth 1 (apply 'color-rgb-to-hsv
+                    (color-name-to-rgb color)))
+    0))
+
+
+(defun theme-magic--filter-unsaturated (color)
+  "Return color iff `COLOR' is not close to greyscale.
+
+Otherwise, return `nil'.
+
+If color is saturated enough, it's ok. Otherwise, treat it as
+greyscale."
+  ;; TODO: Remove saturation messages.
+  (if (> (theme-magic--measure-saturation color)
+         theme-magic--saturated-color-threshold)
+      (progn
+        (message "Saturation for %s: %s"
+                 color
+                 (theme-magic--measure-saturation color))
+        color)
+    (message "Not saturated enough; %s: %s"
+             color
+             (theme-magic--measure-saturation color))
+    nil))
+
+
+(defun theme-magic--colors-match (color1 color2)
+  "Check if two colors are very similar - whether they look the same.
+
+If they look the same (are minimally different), they match.
+
+Returns `t' if they match, `nil' if not."
+  ;; Failsafe - only compare if both colors are defined.
+  (if (and color1 color2)
+      (progn
+        ;; The colors are only the same if the difference is within the acceptable
+        ;; threshold.
+        (<= (theme-magic--color-difference color1 color2)
+            theme-magic--same-color-threshold))
+    ;; If one of the colors is nil, they don't match. Even if both are nil, they
+    ;; don't match.
+    nil))
 
 
 (defun theme-magic--extract-background-color ()
@@ -117,6 +352,16 @@ E.g. \"Orange\" -> \"#FFA500\"."
   "Extract the foreground color of the default face, in hex."
   (theme-magic--color-name-to-hex
    (face-foreground 'default)))
+
+
+(defun theme-magic--safe-eval (form)
+  "Call `eval' on `FORM', catching any errors.
+
+If an error is thrown, just return nil. Does not propagate the
+error. Does not interrupt execution."
+  (condition-case nil
+      (eval form)
+    (error nil)))
 
 
 (defun theme-magic--check-dependencies ()
@@ -184,10 +429,25 @@ doesn't provide any wrapper feedback to the user."
 
 Provides some wrapper feedback to the user, plus some error
 handling."
-  (message "Applying colors: %s" colors)
+  (message "Applying colors: %s"
+           ;; Number the colors to make it clearer for the user which color is
+           ;; being applied where.
+           (mapcar* #'cons
+                    (number-sequence 0 (length colors))
+                    colors))
   (if (zerop (theme-magic--call-pywal-process colors))
       (message "Successfully applied colors!")
     (user-error "There was an error applying the colors. See buffer \"*pywal*\" for details.")))
+
+
+(defun theme-magic--get-ansi-color (ansi-index)
+  "Get the ansi color at `ansi-index', as a hex string.
+
+Note that this refers to the *in-built, Emacs ANSI colors* - not
+the set of 16 generated by `theme-magic--16-colors-from-ansi'.
+Thus, it only works with *indexes 0-7* (inclusive)."
+  (theme-magic--color-name-to-hex
+   (aref ansi-color-names-vector ansi-index)))
 
 
 (defun theme-magic--16-colors-from-ansi ()
@@ -211,6 +471,127 @@ handling."
             ansi-colors-vector)))
 
 
+(defun theme-magic--get-preferred-colors (ansi-index)
+  (mapcar (lambda (color-form)
+            (theme-magic--color-name-to-hex
+             (theme-magic--safe-eval color-form)))
+          (alist-get ansi-index theme-magic--preferred-extracted-colors)))
+
+
+(defun theme-magic--color-taken (color existing-colors)
+  (catch 'color-taken
+    (mapc (lambda (existing-color)
+            ;; `existing-color' will be a cons cell, because it comes from an
+            ;; alist. Take the `cdr' - this is the color string.
+            (when (theme-magic--colors-match (cdr existing-color) color)
+              (throw 'color-taken t)))
+          existing-colors)
+    nil))
+
+
+(defun theme-magic--extract-color (ansi-index existing-colors)
+  (let ((possible-colors (theme-magic--get-preferred-colors ansi-index)))
+    ;; Check each color in turn to see if it's a new color. If it is, stop
+    ;; immediately and return it.
+    (catch 'new-color
+      (mapc (lambda (possible-color)
+              (when (and possible-color
+                         (not (theme-magic--color-taken possible-color existing-colors)))
+                (throw 'new-color possible-color)))
+            possible-colors)
+      ;; If no color could be extracted, return nil for now.
+      nil)))
+
+
+(defun theme-magic--extract-fallback-color (ansi-index existing-colors)
+  (catch 'new-color
+    (mapc (lambda (possible-color-form)
+            (let ((possible-color (theme-magic--color-name-to-hex
+                                   (theme-magic--safe-eval possible-color-form))))
+              ;; When the color exists and is not taken, we have a match.
+              (when (and possible-color
+                         (not (theme-magic--color-taken possible-color existing-colors)))
+                (throw 'new-color possible-color))))
+          theme-magic--fallback-extracted-colors)
+    nil))
+
+
+(defun theme-magic--force-extract-color (ansi-index)
+  (theme-magic--color-name-to-hex
+   (or (theme-magic--safe-eval (car (alist-get ansi-index theme-magic--preferred-extracted-colors)))
+       ;; It's possible even the above will return nil, because the preferred
+       ;; color form fails to evaluate. As a final fallback, just use the ANSI
+       ;; color.
+       ;;
+       ;; TODO: The ansi colors should have already been in the fallback colors.
+       ;; Is it worth duplicating them here?
+       (theme-magic--get-ansi-color ansi-index)
+       ;; Final failsafe - should never get here, but just in case, a neutral
+       ;; color.
+       "#888888")))
+
+
+(defun theme-magic--auto-extract-16-colors ()
+  ;; Note that color extraction is worst-case speed complexity o(n*16), where
+  ;; `n' is (roughly) the number of color options (preferred and fallback). This
+  ;; scales faster than O(n) but it should still be negligible.
+  ;;
+  ;; This can be easily reduced by ignoring colors we've already tried to fall
+  ;; back to, but with 16 colors, it's not worth it.
+  (let (
+        ;; `extracted-colors' is an alist mapping ANSI numbers to colors.
+        (extracted-colors '())
+        )
+    ;; Go through the colors in the preferred order, and attempt to extract a
+    ;; color for each.
+    (mapc (lambda (ansi-index)
+            (push (cons ansi-index
+                        (or (theme-magic--extract-color ansi-index extracted-colors)
+                            ;; Try and find an unused color in the fallback colors.
+                            (theme-magic--extract-fallback-color ansi-index extracted-colors)
+                            ;; If we couldn't find a unique color, fall back to
+                            ;; the best duplicate color.
+                            (theme-magic--force-extract-color ansi-index)))
+                  extracted-colors))
+          theme-magic--color-priority)
+
+    ;; It may not have been possible to find unique colors for every index. We
+    ;; go through any indexes that were missed, and try to find a fallback
+    ;; color.
+    ;;
+    ;; Note that we do this as a separate process, *after* the initial color
+    ;; assignments. This is because we don't want nil colors to go through the
+    ;; fallback list and accidentally take the primary choices of later colors.
+    ;; Every color should have a chance at its primary choice *first*. Only then
+    ;; do we go back and fill in the blanks.
+    ;; (mapc (lambda (ansi-index)
+    ;;         (unless (alist-get ansi-index extracted-colors)
+    ;;           ;; TODO: Is this an in-place deletion?
+    ;;           (assq-delete-all ansi-index extracted-colors)
+    ;;           (push (cons ansi-index
+    ;;                       (or
+    ;;                        ;; Try and find an unused color in the fallback colors.
+    ;;                        (theme-magic--extract-fallback-color ansi-index extracted-colors)
+    ;;                        ;; If we couldn't find a unique color, fall back to
+    ;;                        ;; the best duplicate color.
+    ;;                        (theme-magic--force-extract-color ansi-index)))
+    ;;                 extracted-colors)))
+    ;;       theme-magic--color-priority)
+
+    ;; We now have an alist of the first 9 ANSI indexes, mapped to colors. We
+    ;; need to return a straight list of 16 colors. Extract the colors one by
+    ;; one.
+    (append (mapcar (lambda (index)
+                      (alist-get index extracted-colors))
+                    '(0 1 2 3 4 5 6 7 8))
+            ;; For now, colors 9-15 (the "light" color variants) should just
+            ;; mirror their non-light counterparts.
+            (mapcar (lambda (index)
+                      ;; Subtract 8 to get the dark version of the light index.
+                      (alist-get (- index 8) extracted-colors))
+                    '(9 10 11 12 13 14 15)))))
+
+
 ;;;###autoload
 (defun theme-magic-from-emacs ()
   "Theme the rest of Linux based on the Emacs theme."
@@ -219,7 +600,7 @@ handling."
   ;; we want to do it up front.
   (theme-magic--check-dependencies)
   (theme-magic--apply-colors-with-pywal
-   (theme-magic--16-colors-from-ansi)))
+   (theme-magic--auto-extract-16-colors)))
 
 
 (defun theme-magic-from-emacs--wrapper (&rest _)
