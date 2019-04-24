@@ -89,42 +89,37 @@
 (defvar theme-magic--preferred-extracted-colors
   '(
     ;; Black
-    ;; This is a special face - it should inherit from the background.
+    ;; This is a special face - it should match the background.
     (0 . ((face-background 'default)))
     ;; Red
-    ;; The red color is special - it should actually be red whenever
-    ;; possible, because it will likely be used to denote errors.
-    (1 . (;; Errors tend to be red.
+    ;; The red color should look like an error, because it is probably going
+    ;; to be used to denote errors.
+    (1 . (
+          ;; The error face is best. The error face also tends to actually
+          ;; be red.
           (face-foreground 'error)
+          ;; Sometimes, errors are denoted by their background color.
+          (face-background 'error)
           ;; The warning face hopefully also looks like an error. But, it is
           ;; less likely to be red.
-          (face-foreground 'font-lock-warning-face)
-          ;; Some themes color the background of the warning face instead of the
-          ;; foreground.
-          (face-background 'font-lock-warning-face)))
-    ;; Green
-    (2 . ((face-foreground 'font-lock-string-face)))
+          (face-foreground 'warning)
+          ;; Likewise, sometimes warnings are denoted by their background.
+          (face-background 'warning)))
     ;; Yellow
+    ;; Try to give yellow a warning face, if available.
     (3 . ((face-foreground 'font-lock-warning-face)
           (face-foreground 'warning)))
-    ;; Blue
-    ;; Treat this as the most common color. Treat cyan as the second most
-    ;; common.
-    (4 . ((face-foreground 'font-lock-keyword-face)
-          (face-foreground 'font-lock-constant-face)))
-    ;; Purple
-    (5 . ((face-foreground 'font-lock-constant-face)))
     ;; Cyan
-    (6 . (;; The function name face tends to be the most dominant color.
-          (face-foreground 'font-lock-function-name-face)
-          ;; The builtin face matches in at least one theme
-          ;; TODO: Does it match builtin in all themes?
-          ;; Answer: not in zenburn.
-          (face-foreground 'font-lock-builtin-face)
-          (face-foreground 'font-lock-constant-face)))
+    ;; Cyan needs to be the secondary dominant face.
+    (6 . ((face-foreground 'font-lock-function-name-face)
+          (face-foreground 'font-lock-variable-name-face)))
     ;; White
+    ;; Special color - it should match normal text.
     (7 . ((face-foreground 'default)))
     ;; Black-light
+    ;; Special color - it is used for text that's faded, e.g. in code
+    ;; comments (but note that while most themes make shadow a faded color,
+    ;; the comment face can sometimes be vibrant).
     (8 . ((face-foreground 'shadow)
           (face-foreground 'font-lock-comment-face)))
     ;; The rest of the light faces should inherit from their regular
