@@ -390,7 +390,7 @@ Returns t if they match, nil if not."
 
 This method ensures the program is not interrupted in the case of
 an error. If an error does occur, this method will catch it and
-return `nil'."
+return nil."
   (condition-case nil
       (eval form)
     (error nil)))
