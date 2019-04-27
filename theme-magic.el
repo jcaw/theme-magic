@@ -242,9 +242,20 @@ a fallback color.")
 
 
 (defvar theme-magic--same-color-threshold 0.1
-  "Difference in values at which two colors should be considered the same."
-  ;; TODO: Explain same-color-threshold properly
-  )
+  "Max difference between RGB values for two colors to be considered the same.
+
+Refers to RGB values on the 0.0 to 1.0 scale.
+
+When generating a set of colors, it's important that the same
+color is not duplicated. Each ANSI color should look different,
+if possible. Two very similar colors are generated. This is the
+threshold at which we say \"these colors are too visually
+similar, we should treat them as the same.\"
+
+There is some slack in this variable. At higher values, such as
+0.1, colors that are visually distinct will be treated as the
+same. That's fine - it stops very similar colors from being
+generated.")
 
 
 (defvar theme-magic--saturated-color-threshold 0.1
