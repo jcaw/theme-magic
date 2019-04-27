@@ -330,20 +330,13 @@ greyscale.
 
 In practical terms, this method eliminates colors that are shades
 of grey, rather than shades of a color."
-  ;; TODO: Remove saturation messages.
   (if (> (theme-magic--measure-saturation color)
          theme-magic--saturated-color-threshold)
-      (progn
-        (message "Saturation for %s: %s"
-                 color
-                 (theme-magic--measure-saturation color))
-        color)
-    (message "Not saturated enough; %s: %s"
-             color
-             (theme-magic--measure-saturation color))
+        color
     nil))
 
 
+;; TODO: Rename to embody the fact it's comparing similarity, not equality.
 (defun theme-magic--colors-match (color1 color2)
   "Check if two colors look very similar.
 
