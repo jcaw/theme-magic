@@ -721,29 +721,6 @@ Footnotes:
                   extracted-colors))
           theme-magic--color-priority)
 
-    ;; It may not have been possible to find unique colors for every index. We
-    ;; go through any indexes that were missed, and try to find a fallback
-    ;; color.
-    ;;
-    ;; Note that we do this as a separate process, *after* the initial color
-    ;; assignments. This is because we don't want nil colors to go through the
-    ;; fallback list and accidentally take the primary choices of later colors.
-    ;; Every color should have a chance at its primary choice *first*. Only then
-    ;; do we go back and fill in the blanks.
-    ;; (mapc (lambda (ansi-index)
-    ;;         (unless (alist-get ansi-index extracted-colors)
-    ;;           ;; TODO: Is this an in-place deletion?
-    ;;           (assq-delete-all ansi-index extracted-colors)
-    ;;           (push (cons ansi-index
-    ;;                       (or
-    ;;                        ;; Try and find an unused color in the fallback colors.
-    ;;                        (theme-magic--extract-fallback-color ansi-index extracted-colors)
-    ;;                        ;; If we couldn't find a unique color, fall back to
-    ;;                        ;; the best duplicate color.
-    ;;                        (theme-magic--force-extract-color ansi-index)))
-    ;;                 extracted-colors)))
-    ;;       theme-magic--color-priority)
-
     ;; We now have an alist of the first 9 ANSI indexes, mapped to colors. We
     ;; need to return a straight list of 16 colors. Extract the colors one by
     ;; one.
