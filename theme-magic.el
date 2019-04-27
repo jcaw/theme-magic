@@ -378,10 +378,11 @@ Returns `t' if they match, `nil' if not."
 
 
 (defun theme-magic--safe-eval (form)
-  "Call `eval' on `FORM', catching any errors.
+  "Call `eval' on `FORM', ignoring any errors.
 
-If an error is thrown, just return nil. Does not propagate the
-error. Does not interrupt execution."
+This method ensures the program is not interrupted in the case of
+an error. If an error does occur, this method will catch it and
+return `nil'."
   (condition-case nil
       (eval form)
     (error nil)))
