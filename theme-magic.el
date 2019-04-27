@@ -262,7 +262,9 @@ generated.")
   "Threshold at which a color counts as \"saturated\".
 
 This corresponds to the saturation component of the HSV color
-value.")
+value (scale 0.0 to 1.0). If a color has a saturation value equal
+to or above this value, it counts as saturated, rather than
+greyscale.")
 
 
 (defun theme-magic--color-name-to-hex (color-name)
