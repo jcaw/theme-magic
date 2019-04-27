@@ -596,7 +596,7 @@ This method returns the first fallback color that can be used,
 given `EXISTING-COLORS'. A color can be used if it is
 sufficiently different from all the existing colors.
 
-Returns `nil' if no valid color could be found."
+Returns nil if no valid color could be found."
   (catch 'new-color
     (mapc (lambda (possible-color-form)
             (let ((possible-color (theme-magic--color-name-to-hex
