@@ -496,6 +496,17 @@ Thus, it only works with *indexes 0-7* (inclusive)."
 
 
 (defun theme-magic--get-preferred-colors (ansi-index)
+  "Get the best colors to use for a particular ansi-index.
+
+Colors are evaluated at runtime within this method. Each color
+should be a form that can be evaluated wth `eval'. If an error
+occurs while evaluating the form, that color will be skipped.
+
+Preferred colors are stored in
+`theme-magic--preferred-extracted-colors'. This is an alist
+mapping ANSI color indexes to a list of color forms, ranked best
+to worst. See `theme-magic--preferred-extracted-colors' for more
+details."
   (mapcar (lambda (color-form)
             (theme-magic--color-name-to-hex
              (theme-magic--safe-eval color-form)))
