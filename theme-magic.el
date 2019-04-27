@@ -572,7 +572,7 @@ their assigned hexadecimal colors, e.g:
 
 Returns the best valid color, given `EXISTING-COLORS'.
 
-If none of the preferred colors are valid, returns `nil'."
+If none of the preferred colors are valid, returns nil."
   (let ((possible-colors (theme-magic--get-preferred-colors ansi-index)))
     ;; Check each color in turn to see if it's a new color. If it is, stop
     ;; immediately and return it.
