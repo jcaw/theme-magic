@@ -422,7 +422,7 @@ installed - and accessible from the user's home dir."
 
 
 (defun theme-magic--call-pywal-process (colors)
-  "Call the Python script that sets the theme with pywal.
+  "Call the Python script that sets the theme with Pywal.
 
 `COLORS' should be the 16 hexadecimal colors to use as the theme.
 
