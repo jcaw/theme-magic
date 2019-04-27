@@ -287,6 +287,16 @@ value due to rounding errors."
 
 
 (defun theme-magic--color-difference (color1 color2)
+  "Calculate the difference between two colors.
+
+For the purposes of this method, this is the max of all the
+differences in RGB values.
+
+The difference is returned on a scale of 0.0 to 1.0
+
+In more detail: the red, green and blue values of `COLOR1' and
+`COLOR2' are each compared. R to R, G to G, and B to B. The
+difference is the maximum of these differences."
   (let ((color1-rgb (color-name-to-rgb color1))
         (color2-rgb (color-name-to-rgb color2))
         (max-difference 0))
