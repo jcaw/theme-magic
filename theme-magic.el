@@ -318,7 +318,10 @@ If `COLOR' is `nil', the saturation is treated as 0."
 Otherwise, return `nil'.
 
 If color is saturated enough, it's ok. Otherwise, treat it as
-greyscale."
+greyscale.
+
+In practical terms, this method eliminates colors that are shades
+of grey, rather than shades of a color."
   ;; TODO: Remove saturation messages.
   (if (> (theme-magic--measure-saturation color)
          theme-magic--saturated-color-threshold)
