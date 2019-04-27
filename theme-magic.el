@@ -602,6 +602,11 @@ Returns `nil' if no valid color could be found."
 
 
 (defun theme-magic--force-extract-color (ansi-index)
+  "Extract a color for `ANSI-INDEX', with no concern for the overall theme.
+
+This is a fallback method that should be used when no valid color
+could be found. It will provide the best possible color for a
+particular index, *even if* it clashes with another color."
   (theme-magic--color-name-to-hex
    (or (theme-magic--safe-eval (car (alist-get ansi-index theme-magic--preferred-extracted-colors)))
        ;; It's possible even the above will return nil, because the preferred
