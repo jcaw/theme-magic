@@ -300,8 +300,6 @@ difference is the maximum of these differences."
   (let ((color1-rgb (color-name-to-rgb color1))
         (color2-rgb (color-name-to-rgb color2))
         (max-difference 0))
-    ;; I want to avoid accidentally comparing alphas. Explicitly compare only
-    ;; red, green and blue.
     (max (abs (- (nth 0 color1-rgb) (nth 0 color2-rgb)))
          (abs (- (nth 1 color1-rgb) (nth 1 color2-rgb)))
          (abs (- (nth 2 color1-rgb) (nth 2 color2-rgb))))))
