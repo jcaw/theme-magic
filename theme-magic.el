@@ -752,7 +752,24 @@ Footnotes:
 
 ;;;###autoload
 (defun theme-magic-from-emacs ()
-  "Theme the rest of Linux based on the Emacs theme."
+  "Apply the current Emacs theme to the rest of Linux.
+
+This method uses Pywal to set the theme. Ensure you have Pywal
+installed and that its executable, `wal', is available.
+
+See Pywal's documentation for more information:
+
+  https://github.com/dylanaraps/pywal
+
+Pywal is designed to be unobtrusive, so it only sets your theme
+for the current session. You have to explicitly tell Pywal to
+reload its theme on a fresh login, by calling \"wal -R\". To do
+this automatically, place the line \"wal -R\" in your
+\"~/.Xresources\" file (or whichever file starts programs on a
+graphical login).
+
+See `theme-magic--auto-extract-16-colors' to understand how this
+method chooses colors for the Linux theme."
   (interactive)
   ;; This will actually check dependencies twice, but that's fine - it's cheap
   ;; we want to do it up front.
