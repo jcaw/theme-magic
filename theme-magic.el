@@ -463,7 +463,7 @@ handling."
                     colors))
   (if (zerop (theme-magic--call-pywal-process colors))
       (message "Successfully applied colors!")
-    (user-error "There was an error applying the colors. See buffer \"*pywal*\" for details.")))
+    (user-error "There was an error applying the colors. See buffer \"*pywal*\" for details")))
 
 
 (defun theme-magic--get-ansi-color (ansi-index)
