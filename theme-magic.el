@@ -579,6 +579,16 @@ If none of the preferred colors are valid, returns `nil'."
 
 
 (defun theme-magic--extract-fallback-color (ansi-index existing-colors)
+  "Extract a color for `ANSI-INDEX' from the set of fallback colors.
+
+`theme-magic--fallback-extracted-colors' is the list of fallback
+colors. See that variable for more information.
+
+This method returns the first fallback color that can be used,
+given `EXISTING-COLORS'. A color can be used if it is
+sufficiently different from all the existing colors.
+
+Returns `nil' if no valid color could be found."
   (catch 'new-color
     (mapc (lambda (possible-color-form)
             (let ((possible-color (theme-magic--color-name-to-hex
