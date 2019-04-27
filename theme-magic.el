@@ -553,6 +553,18 @@ results, in general."
 
 
 (defun theme-magic--extract-color (ansi-index existing-colors)
+  "Extract a preferred color from the current theme for `ANSI-INDEX'.
+
+`EXISTING-COLORS' should contain the colors that have already
+been assigned. It should be an alist mapping ANSI indexes to
+their assigned hexadecimal colors, e.g:
+
+    '((0 . \"#FFFFFF\")
+      (1 . \"#FF0000\"))
+
+Returns the best valid color, given `EXISTING-COLORS'.
+
+If none of the preferred colors are valid, returns `nil'."
   (let ((possible-colors (theme-magic--get-preferred-colors ansi-index)))
     ;; Check each color in turn to see if it's a new color. If it is, stop
     ;; immediately and return it.
