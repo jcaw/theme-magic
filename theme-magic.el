@@ -514,6 +514,34 @@ details."
 
 
 (defun theme-magic--color-taken (color existing-colors)
+  "Check if a particular `COLOR' has already been taken in `EXISTING-COLORS'.
+
+This method checks color similarity. If `COLOR' is too similar to
+another color that's already been assigned, we count it as taken.
+This ensures each ANSI color generated is fairly different from
+every other color.
+
+There are two main reasons to supress similar color assignments:
+
+  1. Terminal colors are primarily used to highlight and
+     segregate information. It's important to ensure the colors
+     stay visually distinct, so the user can clearly tell each
+     color apart at a glance.
+
+  2. Some themes use many subtle variations of one color (e.g.
+     `doom-one' uses many shades of deep purple). When processed,
+     the color palette can end up being mainly different variants
+     of that color. Back to our example: `doom-one' is not a
+     purple theme, but without correcting for this tendency,
+     the theme produced by `theme-magic' will look very purple.
+
+     Suppressing similar colors prevents many similar colors from
+     accruing in the result, which makes it harder for this kind
+     of color shift to happen.
+
+Note that these results were determined via trial and error. In
+practice, banning similar colors simply produces better looking
+results, in general."
   (catch 'color-taken
     (mapc (lambda (existing-color)
             ;; `existing-color' will be a cons cell, because it comes from an
