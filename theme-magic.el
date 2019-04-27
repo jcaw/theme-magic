@@ -300,9 +300,11 @@ value due to rounding errors."
 
 
 (defun theme-magic--measure-saturation (color)
-  "How saturated is `COLOR' on a scale of 0-1?
+  "How saturated is `COLOR' on a scale of 0.0 to 1.0?
 
-Uses the saturation component of HSV."
+Uses the saturation component of HSV.
+
+If `COLOR' is `nil', the saturation is treated as 0."
   (if color
       ;; Use HSV over HSL for more consistent results on light colors.
       (nth 1 (apply 'color-rgb-to-hsv
