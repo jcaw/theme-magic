@@ -389,10 +389,10 @@ return `nil'."
 
 
 (defun theme-magic--check-dependencies ()
-  "Ensure dependencies are installed. Throws an error if not.
+  "Ensure dependencies are installed. Throw an error if not.
 
-Specifically, this checks that both python and pywal are
-installed and accessible from the user's home dir."
+Specifically, this checks that both Python and Pywal are
+installed - and accessible from the user's home dir."
   ;; If we're in a pyenv directory, we might accidentally run the virtual
   ;; version of Python instead of the user's root version. To fix this, we
   ;; temporarily change to the user's dir.
