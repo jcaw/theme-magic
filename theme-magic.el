@@ -622,6 +622,74 @@ particular index, *even if* it clashes with another color."
 
 
 (defun theme-magic--auto-extract-16-colors ()
+  "Automatically extract a set of 16 ANSI colors from the current theme.
+
+The way this method works is it takes each ANSI color slot and
+tries to extract a color from the current theme, assigning it to
+that slot. Most of these colors are extracted from the currently
+assigned fonts.
+
+For example, one of the more prominent \"colors\" for the current
+theme is embedded in the font used for keywords. We can extract
+it as so:
+
+    (face-foreground 'font-lock-keyword-face) -> \"#4f97d7\"
+
+This color can then be assigned to one of the ANSI slots.
+
+Certain colors are preferred for certain slots. For example:
+
+  1. The ANSI color at index \"1\" is \"red\". Many terminal
+     applications use this color to denote errors, so we attempt
+     to extract ANSI color 1 from the theme's `error' face. If
+     that doesn't work, we try the `warning' face. If that
+     doesn't work, we fall back to the other colors.The point is
+     to ensure `red' looks like an error.
+
+  2. The first ANSI color is \"black\" and denotes the background
+     for most terminal applications. We want this color to match
+     the background color of the current theme, so we prefer
+     that.
+
+We repeat this process for each of the first 8 ANSI colors (plus
+color 8, the off-background face[1], so 9 total), until all
+colors have been assigned. Note that we cross-reference against
+slots that have already been assigned, to ensure each color is
+sufficiently different. No two ANSI colors should be the same, or
+too similar[2].
+
+After this is done, the last *7* colors are filled in. These are
+the \"light variant\" colors[1]. These are simply duplicated from
+their non-light counterparts (this is the same method used by
+vanilla Pywal). For example, \"red-light\" (color 9) becomes the
+same color as \"red\" (color 1). \"White-light\" (color 15)
+becomes the same as \"white\" (color 7).
+
+---
+
+Footnotes:
+
+  [1]: Ansi color 8 is special. It is \"black-bright\" - i.e,
+       grey. In practice, this means it is used for faded text -
+       it's the color used to denote unimportant information or
+       to prevent text from standing out. The Emacs corollary is
+       the `shadow' face.
+
+       Many syntax highlighters denote code comments with this
+       color.
+
+       Note that this means we cannot have \"black-bright\"
+       inherit from \"black\" - it has to be extracted
+       separately.
+
+  [2]: All ANSI colors should be somewhat different because their
+       purpose is to denote different types of information. They
+       need to be differentiable at a glance.
+
+       HOWEVER, some themes may not actually have enough distinct
+       colors to construct an entire set. In these cases, this
+       method will use a fallback and duplicates may be produced.
+       In practice, this is very rare."
   ;; Note that color extraction is worst-case speed complexity o(n*16), where
   ;; `n' is (roughly) the number of color options (preferred and fallback). This
   ;; scales faster than O(n) but it should still be negligible.
