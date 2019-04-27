@@ -398,13 +398,14 @@ installed - and accessible from the user's home dir."
   ;; version of Python instead of the user's root version. To fix this, we
   ;; temporarily change to the user's dir.
   (let ((default-directory "~/"))
+    (unless (executable-find "python")
+      (user-error (concat "Could not find 'python' executable. "
+                          "Is Python installed and on the path?")))
     (unless (executable-find "wal")
       (user-error (concat "Could not find 'wal' executable. "
                           "Is Pywal installed and on the path?")))
     ;; TODO: Check wal is up-to-date enough to use, and the python implementation.
-    (unless (executable-find "python")
-      (user-error (concat "Could not find 'python' executable. "
-                          "Is Python installed and on the path?")))))
+    ))
 
 
 (defun theme-magic--erase-pywal-buffer ()
