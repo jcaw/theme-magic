@@ -132,9 +132,7 @@ colors. Each color should be a form that can be evaluated. For
 example:
 
    '((1 . ((font-foreground 'preferred-face)
-           (font-background 'backup-face))))
-
-")
+           (font-background 'backup-face))))")
 
 
 (defvar theme-magic--fallback-extracted-colors
