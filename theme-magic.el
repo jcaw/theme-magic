@@ -819,6 +819,9 @@ information."
 (defun theme-magic--enable-auto-update ()
   "Enable automatic Linux theme updating.
 
+Note for end users: DO NOT use this method directly. Use the
+minor mode, `theme-magic-export-theme-mode', instead.
+
 Once enabled, the Linux theme will be updated whenever the Emacs
 theme is changed.
 
@@ -831,6 +834,9 @@ exported - you must do that manually or change the theme again."
 
 (defun theme-magic--disable-auto-update ()
   "Disable automatic Linux theme updating.
+
+Note for end users: DO NOT use this method directly. Use the
+minor mode, `theme-magic-export-theme-mode', instead.
 
 Once disabled, the Linux theme will need to be updated manually
 with `theme-magic-from-emacs'."
