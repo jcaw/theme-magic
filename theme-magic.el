@@ -312,7 +312,7 @@ difference is the maximum of these differences."
 
 Uses the saturation component of HSV.
 
-If `COLOR' is `nil', the saturation is treated as 0."
+If `COLOR' is nil, the saturation is treated as 0."
   (if color
       ;; Use HSV over HSL for more consistent results on light colors.
       (nth 1 (apply 'color-rgb-to-hsv
