@@ -5,8 +5,8 @@
 ;; Author: GitHub user "jcaw" <40725916+jcaw@users.noreply.github.com>
 ;; URL: https://github.com/jcaw/theme-magic.el
 ;; Keywords: unix, faces, terminals, extensions
-;; Version: 0.2.0
-;; Package-Requires: ((emacs "24.4") (seq "1.8"))
+;; Version: 0.2.2
+;; Package-Requires: ((emacs "25") (seq "1.8"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -132,9 +132,7 @@ colors. Each color should be a form that can be evaluated. For
 example:
 
    '((1 . ((font-foreground 'preferred-face)
-           (font-background 'backup-face))))
-
-")
+           (font-background 'backup-face))))")
 
 
 (defvar theme-magic--fallback-extracted-colors
@@ -242,16 +240,29 @@ a fallback color.")
 
 
 (defvar theme-magic--same-color-threshold 0.1
-  "Difference in values at which two colors should be considered the same."
-  ;; TODO: Explain same-color-threshold properly
-  )
+  "Max difference between RGB values for two colors to be considered the same.
+
+Refers to RGB values on the 0.0 to 1.0 scale.
+
+When generating a set of colors, it's important that the same
+color is not duplicated. Each ANSI color should look different,
+if possible. Two very similar colors are generated. This is the
+threshold at which we say \"these colors are too visually
+similar, we should treat them as the same.\"
+
+There is some slack in this variable. At higher values, such as
+0.1, colors that are visually distinct will be treated as the
+same. That's fine - it stops very similar colors from being
+generated.")
 
 
 (defvar theme-magic--saturated-color-threshold 0.1
   "Threshold at which a color counts as \"saturated\".
 
 This corresponds to the saturation component of the HSV color
-value.")
+value (scale 0.0 to 1.0). If a color has a saturation value equal
+to or above this value, it counts as saturated, rather than
+greyscale.")
 
 
 (defun theme-magic--color-name-to-hex (color-name)
@@ -276,6 +287,16 @@ value due to rounding errors."
 
 
 (defun theme-magic--color-difference (color1 color2)
+  "Calculate the difference between two colors.
+
+For the purposes of this method, this is the max of all the
+differences in RGB values.
+
+The difference is returned on a scale of 0.0 to 1.0
+
+In more detail: the red, green and blue values of `COLOR1' and
+`COLOR2' are each compared. R to R, G to G, and B to B. The
+difference is the maximum of these differences."
   (let ((color1-rgb (color-name-to-rgb color1))
         (color2-rgb (color-name-to-rgb color2))
         (max-difference 0))
@@ -287,9 +308,11 @@ value due to rounding errors."
 
 
 (defun theme-magic--measure-saturation (color)
-  "How saturated is `COLOR' on a scale of 0-1?
+  "How saturated is `COLOR' on a scale of 0.0 to 1.0?
 
-Uses the saturation component of HSV."
+Uses the saturation component of HSV.
+
+If `COLOR' is nil, the saturation is treated as 0."
   (if color
       ;; Use HSV over HSL for more consistent results on light colors.
       (nth 1 (apply 'color-rgb-to-hsv
@@ -300,30 +323,31 @@ Uses the saturation component of HSV."
 (defun theme-magic--filter-unsaturated (color)
   "Return color iff `COLOR' is not close to greyscale.
 
-Otherwise, return `nil'.
+Otherwise, return nil.
 
 If color is saturated enough, it's ok. Otherwise, treat it as
-greyscale."
-  ;; TODO: Remove saturation messages.
+greyscale.
+
+In practical terms, this method eliminates colors that are shades
+of grey, rather than shades of a color."
   (if (> (theme-magic--measure-saturation color)
          theme-magic--saturated-color-threshold)
-      (progn
-        (message "Saturation for %s: %s"
-                 color
-                 (theme-magic--measure-saturation color))
-        color)
-    (message "Not saturated enough; %s: %s"
-             color
-             (theme-magic--measure-saturation color))
+        color
     nil))
 
 
+;; TODO: Rename to embody the fact it's comparing similarity, not equality.
 (defun theme-magic--colors-match (color1 color2)
-  "Check if two colors are very similar - whether they look the same.
+  "Check if two colors look very similar.
 
-If they look the same (are minimally different), they match.
+The R, G and B components of `COLOR1' and `COLOR2' are compared,
+and the biggest difference is measured. If this difference is
+below a certain threshold, it is assumed that the colors are
+similar enough that they count as a match.
 
-Returns `t' if they match, `nil' if not."
+The threshold is defined in `theme-magic--same-color-threshold'.
+
+Returns t if they match, nil if not."
   ;; Failsafe - only compare if both colors are defined.
   (if (and color1 color2)
       (progn
@@ -355,31 +379,33 @@ Returns `t' if they match, `nil' if not."
 
 
 (defun theme-magic--safe-eval (form)
-  "Call `eval' on `FORM', catching any errors.
+  "Call `eval' on `FORM', ignoring any errors.
 
-If an error is thrown, just return nil. Does not propagate the
-error. Does not interrupt execution."
+This method ensures the program is not interrupted in the case of
+an error. If an error does occur, this method will catch it and
+return nil."
   (condition-case nil
       (eval form)
     (error nil)))
 
 
 (defun theme-magic--check-dependencies ()
-  "Ensure dependencies are installed. Throws an error if not.
+  "Ensure dependencies are installed. Throw an error if not.
 
-Specifically, this checks that both python and pywal are
-installed and accessible from the user's home dir."
+Specifically, this checks that both Python and Pywal are
+installed - and accessible from the user's home dir."
   ;; If we're in a pyenv directory, we might accidentally run the virtual
   ;; version of Python instead of the user's root version. To fix this, we
   ;; temporarily change to the user's dir.
   (let ((default-directory "~/"))
+    (unless (executable-find "python")
+      (user-error (concat "Could not find 'python' executable. "
+                          "Is Python installed and on the path?")))
     (unless (executable-find "wal")
       (user-error (concat "Could not find 'wal' executable. "
                           "Is Pywal installed and on the path?")))
     ;; TODO: Check wal is up-to-date enough to use, and the python implementation.
-    (unless (executable-find "python")
-      (user-error (concat "Could not find 'python' executable. "
-                          "Is Python installed and on the path?")))))
+    ))
 
 
 (defun theme-magic--erase-pywal-buffer ()
@@ -390,7 +416,7 @@ installed and accessible from the user's home dir."
 
 
 (defun theme-magic--call-pywal-process (colors)
-  "Call the Python script that sets the theme with pywal.
+  "Call the Python script that sets the theme with Pywal.
 
 `COLORS' should be the 16 hexadecimal colors to use as the theme.
 
@@ -437,11 +463,11 @@ handling."
                     colors))
   (if (zerop (theme-magic--call-pywal-process colors))
       (message "Successfully applied colors!")
-    (user-error "There was an error applying the colors. See buffer \"*pywal*\" for details.")))
+    (user-error "There was an error applying the colors. See buffer \"*pywal*\" for details")))
 
 
 (defun theme-magic--get-ansi-color (ansi-index)
-  "Get the ansi color at `ansi-index', as a hex string.
+  "Get the ansi color at `ANSI-INDEX', as a hex string.
 
 Note that this refers to the *in-built, Emacs ANSI colors* - not
 the set of 16 generated by `theme-magic--16-colors-from-ansi'.
@@ -472,6 +498,17 @@ Thus, it only works with *indexes 0-7* (inclusive)."
 
 
 (defun theme-magic--get-preferred-colors (ansi-index)
+  "Get the best colors to use for a particular `ANSI-INDEX'.
+
+Colors are evaluated at runtime within this method. Each color
+should be a form that can be evaluated wth `eval'. If an error
+occurs while evaluating the form, that color will be skipped.
+
+Preferred colors are stored in
+`theme-magic--preferred-extracted-colors'. This is an alist
+mapping ANSI color indexes to a list of color forms, ranked best
+to worst. See `theme-magic--preferred-extracted-colors' for more
+details."
   (mapcar (lambda (color-form)
             (theme-magic--color-name-to-hex
              (theme-magic--safe-eval color-form)))
@@ -479,6 +516,34 @@ Thus, it only works with *indexes 0-7* (inclusive)."
 
 
 (defun theme-magic--color-taken (color existing-colors)
+  "Check if a particular `COLOR' has already been taken in `EXISTING-COLORS'.
+
+This method checks color similarity. If `COLOR' is too similar to
+another color that's already been assigned, we count it as taken.
+This ensures each ANSI color generated is fairly different from
+every other color.
+
+There are two main reasons to supress similar color assignments:
+
+  1. Terminal colors are primarily used to highlight and
+     segregate information. It's important to ensure the colors
+     stay visually distinct, so the user can clearly tell each
+     color apart at a glance.
+
+  2. Some themes use many subtle variations of one color (e.g.
+     `doom-one' uses many shades of deep purple). When processed,
+     the color palette can end up being mainly different variants
+     of that color. Back to our example: `doom-one' is not a
+     purple theme, but without correcting for this tendency,
+     the theme produced by `theme-magic' will look very purple.
+
+     Suppressing similar colors prevents many similar colors from
+     accruing in the result, which makes it harder for this kind
+     of color shift to happen.
+
+Note that these results were determined via trial and error. In
+practice, banning similar colors simply produces better looking
+results, in general."
   (catch 'color-taken
     (mapc (lambda (existing-color)
             ;; `existing-color' will be a cons cell, because it comes from an
@@ -490,6 +555,18 @@ Thus, it only works with *indexes 0-7* (inclusive)."
 
 
 (defun theme-magic--extract-color (ansi-index existing-colors)
+  "Extract a preferred color from the current theme for `ANSI-INDEX'.
+
+`EXISTING-COLORS' should contain the colors that have already
+been assigned. It should be an alist mapping ANSI indexes to
+their assigned hexadecimal colors, e.g:
+
+    '((0 . \"#FFFFFF\")
+      (1 . \"#FF0000\"))
+
+Returns the best valid color, given `EXISTING-COLORS'.
+
+If none of the preferred colors are valid, returns nil."
   (let ((possible-colors (theme-magic--get-preferred-colors ansi-index)))
     ;; Check each color in turn to see if it's a new color. If it is, stop
     ;; immediately and return it.
@@ -504,6 +581,16 @@ Thus, it only works with *indexes 0-7* (inclusive)."
 
 
 (defun theme-magic--extract-fallback-color (ansi-index existing-colors)
+  "Extract a color for `ANSI-INDEX' from the set of fallback colors.
+
+`theme-magic--fallback-extracted-colors' is the list of fallback
+colors. See that variable for more information.
+
+This method returns the first fallback color that can be used,
+given `EXISTING-COLORS'. A color can be used if it is
+sufficiently different from all the existing colors.
+
+Returns nil if no valid color could be found."
   (catch 'new-color
     (mapc (lambda (possible-color-form)
             (let ((possible-color (theme-magic--color-name-to-hex
@@ -517,6 +604,11 @@ Thus, it only works with *indexes 0-7* (inclusive)."
 
 
 (defun theme-magic--force-extract-color (ansi-index)
+  "Extract a color for `ANSI-INDEX', with no concern for the overall theme.
+
+This is a fallback method that should be used when no valid color
+could be found. It will provide the best possible color for a
+particular index, *even if* it clashes with another color."
   (theme-magic--color-name-to-hex
    (or (theme-magic--safe-eval (car (alist-get ansi-index theme-magic--preferred-extracted-colors)))
        ;; It's possible even the above will return nil, because the preferred
@@ -532,12 +624,82 @@ Thus, it only works with *indexes 0-7* (inclusive)."
 
 
 (defun theme-magic--auto-extract-16-colors ()
+  "Automatically extract a set of 16 ANSI colors from the current theme.
+
+The way this method works is it takes each ANSI color slot and
+tries to extract a color from the current theme, assigning it to
+that slot. Most of these colors are extracted from the currently
+assigned fonts.
+
+For example, one of the more prominent \"colors\" for the current
+theme is embedded in the font used for keywords. We can extract
+it as so:
+
+    (face-foreground 'font-lock-keyword-face) -> \"#4f97d7\"
+
+This color can then be assigned to one of the ANSI slots.
+
+Certain colors are preferred for certain slots. For example:
+
+  1. The ANSI color at index \"1\" is \"red\". Many terminal
+     applications use this color to denote errors, so we attempt
+     to extract ANSI color 1 from the theme's `error' face. If
+     that doesn't work, we try the `warning' face. If that
+     doesn't work, we fall back to the other colors.The point is
+     to ensure `red' looks like an error.
+
+  2. The first ANSI color is \"black\" and denotes the background
+     for most terminal applications. We want this color to match
+     the background color of the current theme, so we prefer
+     that.
+
+We repeat this process for each of the first 8 ANSI colors (plus
+color 8, the off-background face[1], so 9 total), until all
+colors have been assigned. Note that we cross-reference against
+slots that have already been assigned, to ensure each color is
+sufficiently different. No two ANSI colors should be the same, or
+too similar[2].
+
+After this is done, the last *7* colors are filled in. These are
+the \"light variant\" colors[1]. These are simply duplicated from
+their non-light counterparts (this is the same method used by
+vanilla Pywal). For example, \"red-light\" (color 9) becomes the
+same color as \"red\" (color 1). \"White-light\" (color 15)
+becomes the same as \"white\" (color 7).
+
+---
+
+Footnotes:
+
+  [1]: Ansi color 8 is special. It is \"black-bright\" - i.e,
+       grey. In practice, this means it is used for faded text -
+       it's the color used to denote unimportant information or
+       to prevent text from standing out. The Emacs corollary is
+       the `shadow' face.
+
+       Many syntax highlighters denote code comments with this
+       color.
+
+       Note that this means we cannot have \"black-bright\"
+       inherit from \"black\" - it has to be extracted
+       separately.
+
+  [2]: All ANSI colors should be somewhat different because their
+       purpose is to denote different types of information. They
+       need to be differentiable at a glance.
+
+       HOWEVER, some themes may not actually have enough distinct
+       colors to construct an entire set. In these cases, this
+       method will use a fallback and duplicates may be produced.
+       In practice, this is very rare."
   ;; Note that color extraction is worst-case speed complexity o(n*16), where
   ;; `n' is (roughly) the number of color options (preferred and fallback). This
   ;; scales faster than O(n) but it should still be negligible.
   ;;
-  ;; This can be easily reduced by ignoring colors we've already tried to fall
-  ;; back to, but with 16 colors, it's not worth it.
+  ;; If the number of colors were to grow above 16, this complexity would
+  ;; increase. If that became an issue, it is possible to rewrite this algorithm
+  ;; to reduce that complexity, by maintaining a record of unused colors and
+  ;; pruning it as we progress. Right now, that's not worth it.
   (let (
         ;; `extracted-colors' is an alist mapping ANSI numbers to colors.
         (extracted-colors '())
@@ -555,29 +717,6 @@ Thus, it only works with *indexes 0-7* (inclusive)."
                   extracted-colors))
           theme-magic--color-priority)
 
-    ;; It may not have been possible to find unique colors for every index. We
-    ;; go through any indexes that were missed, and try to find a fallback
-    ;; color.
-    ;;
-    ;; Note that we do this as a separate process, *after* the initial color
-    ;; assignments. This is because we don't want nil colors to go through the
-    ;; fallback list and accidentally take the primary choices of later colors.
-    ;; Every color should have a chance at its primary choice *first*. Only then
-    ;; do we go back and fill in the blanks.
-    ;; (mapc (lambda (ansi-index)
-    ;;         (unless (alist-get ansi-index extracted-colors)
-    ;;           ;; TODO: Is this an in-place deletion?
-    ;;           (assq-delete-all ansi-index extracted-colors)
-    ;;           (push (cons ansi-index
-    ;;                       (or
-    ;;                        ;; Try and find an unused color in the fallback colors.
-    ;;                        (theme-magic--extract-fallback-color ansi-index extracted-colors)
-    ;;                        ;; If we couldn't find a unique color, fall back to
-    ;;                        ;; the best duplicate color.
-    ;;                        (theme-magic--force-extract-color ansi-index)))
-    ;;                 extracted-colors)))
-    ;;       theme-magic--color-priority)
-
     ;; We now have an alist of the first 9 ANSI indexes, mapped to colors. We
     ;; need to return a straight list of 16 colors. Extract the colors one by
     ;; one.
@@ -594,17 +733,39 @@ Thus, it only works with *indexes 0-7* (inclusive)."
 
 ;;;###autoload
 (defun theme-magic-from-emacs ()
-  "Theme the rest of Linux based on the Emacs theme."
+  "Apply the current Emacs theme to the rest of Linux.
+
+This method uses Pywal to set the theme. Ensure you have Pywal
+installed and that its executable, `wal', is available.
+
+See Pywal's documentation for more information:
+
+  https://github.com/dylanaraps/pywal
+
+Pywal is designed to be unobtrusive, so it only sets your theme
+for the current session. You have to explicitly tell Pywal to
+reload its theme on a fresh login, by calling \"wal -R\". To do
+this automatically, place the line \"wal -R\" in your
+\"~/.Xresources\" file (or whichever file starts programs on a
+graphical login).
+
+See `theme-magic--auto-extract-16-colors' to understand how this
+method chooses colors for the Linux theme."
   (interactive)
   ;; This will actually check dependencies twice, but that's fine - it's cheap
-  ;; we want to do it up front.
+  ;; and we want to do it up front.
   (theme-magic--check-dependencies)
   (theme-magic--apply-colors-with-pywal
    (theme-magic--auto-extract-16-colors)))
 
 
 (defun theme-magic-from-emacs--wrapper (&rest _)
-  "Wrapper for `theme-magic-from-emacs' to be used as advice."
+  "Wrapper for `theme-magic-from-emacs' to be used as advice.
+
+Using the normal, autoloaded and interactive method can cause
+strange problems with the advice system. It will also fail if
+arguments are passed to the advised function. This is a wrapper
+method that can be used safely."
   (theme-magic-from-emacs))
 
 
@@ -639,6 +800,9 @@ information."
 (defun theme-magic--enable-auto-update ()
   "Enable automatic Linux theme updating.
 
+Note for end users: DO NOT use this method directly. Use the
+minor mode function, `theme-magic-export-theme-mode', instead.
+
 Once enabled, the Linux theme will be updated whenever the Emacs
 theme is changed.
 
@@ -651,6 +815,9 @@ exported - you must do that manually or change the theme again."
 
 (defun theme-magic--disable-auto-update ()
   "Disable automatic Linux theme updating.
+
+Note for end users: DO NOT use this method directly. Use the
+minor mode function, `theme-magic-export-theme-mode', instead.
 
 Once disabled, the Linux theme will need to be updated manually
 with `theme-magic-from-emacs'."
