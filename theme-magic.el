@@ -337,9 +337,14 @@ of grey, rather than shades of a color."
 
 
 (defun theme-magic--colors-match (color1 color2)
-  "Check if two colors are very similar - whether they look the same.
+  "Check if two colors look very similar.
 
-If they look the same (are minimally different), they match.
+The R, G and B components of each color are compared, and the
+biggest difference is measured. If this difference is below a
+certain threshold, it is assumed that the colors are similar
+enough that they count as a match.
+
+The threshold is defined in `theme-magic--same-color-threshold'.
 
 Returns `t' if they match, `nil' if not."
   ;; Failsafe - only compare if both colors are defined.
