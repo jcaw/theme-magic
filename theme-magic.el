@@ -696,8 +696,10 @@ Footnotes:
   ;; `n' is (roughly) the number of color options (preferred and fallback). This
   ;; scales faster than O(n) but it should still be negligible.
   ;;
-  ;; This can be easily reduced by ignoring colors we've already tried to fall
-  ;; back to, but with 16 colors, it's not worth it.
+  ;; If the number of colors were to grow above 16, this complexity would
+  ;; increase. If that became an issue, it is possible to rewrite this algorithm
+  ;; to reduce that complexity, by maintaining a record of unused colors and
+  ;; pruning it as we progress. Right now, that's not worth it.
   (let (
         ;; `extracted-colors' is an alist mapping ANSI numbers to colors.
         (extracted-colors '())
