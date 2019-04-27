@@ -772,14 +772,19 @@ See `theme-magic--auto-extract-16-colors' to understand how this
 method chooses colors for the Linux theme."
   (interactive)
   ;; This will actually check dependencies twice, but that's fine - it's cheap
-  ;; we want to do it up front.
+  ;; and we want to do it up front.
   (theme-magic--check-dependencies)
   (theme-magic--apply-colors-with-pywal
    (theme-magic--auto-extract-16-colors)))
 
 
 (defun theme-magic-from-emacs--wrapper (&rest _)
-  "Wrapper for `theme-magic-from-emacs' to be used as advice."
+  "Wrapper for `theme-magic-from-emacs' to be used as advice.
+
+Using the normal, autoloaded and interactive method can cause
+strange problems with the advice system. It will also fail if
+arguments are passed to the advised function. This is a wrapper
+method that can be used safely."
   (theme-magic-from-emacs))
 
 
