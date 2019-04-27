@@ -323,7 +323,7 @@ If `COLOR' is nil, the saturation is treated as 0."
 (defun theme-magic--filter-unsaturated (color)
   "Return color iff `COLOR' is not close to greyscale.
 
-Otherwise, return `nil'.
+Otherwise, return nil.
 
 If color is saturated enough, it's ok. Otherwise, treat it as
 greyscale.
