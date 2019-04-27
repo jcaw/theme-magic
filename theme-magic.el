@@ -455,7 +455,7 @@ doesn't provide any wrapper feedback to the user."
 
 Provides some wrapper feedback to the user, plus some error
 handling."
-  (message "Applying colors: %s"
+  (message "Applying colors:\n%s"
            ;; Number the colors to make it clearer for the user which color is
            ;; being applied where.
            (mapcar* #'cons
