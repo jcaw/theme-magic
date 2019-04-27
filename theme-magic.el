@@ -6,7 +6,7 @@
 ;; URL: https://github.com/jcaw/theme-magic.el
 ;; Keywords: unix, faces, terminals, extensions
 ;; Version: 0.2.1
-;; Package-Requires: ((emacs "24.4") (seq "1.8"))
+;; Package-Requires: ((emacs "25") (seq "1.8"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
