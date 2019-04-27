@@ -504,7 +504,7 @@ Thus, it only works with *indexes 0-7* (inclusive)."
 
 
 (defun theme-magic--get-preferred-colors (ansi-index)
-  "Get the best colors to use for a particular ansi-index.
+  "Get the best colors to use for a particular `ANSI-INDEX'.
 
 Colors are evaluated at runtime within this method. Each color
 should be a form that can be evaluated wth `eval'. If an error
