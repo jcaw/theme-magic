@@ -744,7 +744,7 @@ Pywal is designed to be unobtrusive, so it only sets your theme
 for the current session. You have to explicitly tell Pywal to
 reload its theme on a fresh login, by calling \"wal -R\". To do
 this automatically, place the line \"wal -R\" in your
-\"~/.Xresources\" file (or whichever file starts programs on a
+\"~/.xprofile\" file (or whichever file starts programs on a
 graphical login).
 
 See `theme-magic--auto-extract-16-colors' to understand how this
