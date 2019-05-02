@@ -42,8 +42,6 @@ First, you must install [Pywal](https://github.com/dylanaraps/pywal) as a depend
 
 Install `theme-magic` with `M-x package-install RET theme-magic RET`.
 
----
-
 ## Footnotes
 
 ### Restoring Your Theme
