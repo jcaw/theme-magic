@@ -36,6 +36,8 @@
 
 ;;; Code:
 
+(require 'color)
+
 
 (defgroup wal-theme nil
   "Wal-theme options."
