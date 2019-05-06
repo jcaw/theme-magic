@@ -1363,6 +1363,23 @@ nil."
                      (file-name-directory buffer-file-name)))))
 
 
+(defun wal-get-wal-colors ()
+  "Load Pywal's colors from the cache folder.
+
+Only gets the 16 terminal colors. Ignores the foreground, cursor
+& background.
+
+Returns a list of 16 colors (color0, color1, etc.)."
+  (let* ((wal-cache-folder "~/.cache/wal")
+         (wal-cache-json-file (concat wal-cache-folder "/colors.json"))
+         (colors-json (json-read-file wal-cache-json-file)))
+    (mapcar (lambda (color-index)
+              (let ((colors-alist (alist-get 'colors colors-json))
+                    (color-name (format "color%s" color-index)))
+                (alist-get (intern color-name) colors-alist)))
+            (number-sequence 0 15))))
+
+
 ;; TODO: Uncomment and make functional
 ;; (deftheme wal "Theme generated from Pywal's colors.")
 ;; (wal-create-theme 'wal)
@@ -1371,9 +1388,11 @@ nil."
 ;; Testing section
 ;; TODO: Remove
 (deftheme wal "Theme generated from Pywal's colors.")
-(wal-create-theme
- "#27292C" "#F1231E" "#66B01C" "#B0941C" "#4E96D6" "#A21CB0" "#27DDEF" "#B0B0B0"
- "#666666" "#F1231E" "#66B01C" "#B0941C" "#4E96D6" "#A21CB0" "#27DDEF" "#B1B1B1")
+;; (wal-create-theme
+;;  "#27292C" "#F1231E" "#66B01C" "#B0941C" "#4E96D6" "#A21CB0" "#27DDEF" "#B0B0B0"
+;;  "#666666" "#F1231E" "#66B01C" "#B0941C" "#4E96D6" "#A21CB0" "#27DDEF" "#B1B1B1")
+(apply 'wal-create-theme
+       (wal-get-wal-colors))
 
 ;; TODO: For testing. Remove.
 (when nil
