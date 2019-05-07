@@ -361,7 +361,11 @@ nil."
 
        (comment       (if wal-theme-comment-colored
                           ;; Comments should be desaturated even when colored.
-                          (color-desaturate-name aqua 40)
+                          (if dark-theme
+                              (color-desaturate-name aqua 40)
+                            (color-darken-name
+                             (color-desaturate-name aqua 10)
+                             10))
                         shadow))
 
 
