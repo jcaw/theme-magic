@@ -460,7 +460,7 @@ nil."
        (highlight     (wal-blend-hsl dominant background 0.6 0.7 0.4))
        ;; (highlight-dim (if (eq variant 'dark) "#3b314d" "#e7e7fc"))
        (highlight-dim (wal-blend-hsl dominant background  0.4 0.1 0.6))
-       (keyword       accent)
+       (keyword       secondary)
        ;; (lnum          (if (eq variant 'dark) "#44505c" "#a8a8bf"))
        (lnum          (wal-blend shadow aqua 0.2))
        ;; (mat           (if (eq variant 'dark) "#86dc2f" "#ba2f59"))
