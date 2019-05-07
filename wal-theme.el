@@ -1235,6 +1235,12 @@ nil."
      `(spaceline-flycheck-warning((,class (:foreground ,war))))
      `(spaceline-python-venv ((,class (:foreground ,comp))))
 
+     ;; These denote which editing mode Spacemacs is running. It's a pretty
+     ;; dominant color, so it should be attractive.
+     `(spacemacs-emacs-face     ((,class (:background ,dominant))))
+     `(spacemacs-evilified-face ((,class (:background ,secondary))))
+     `(spacemacs-hybrid-face     ((,class (:background ,dominant))))
+
 ;;;;; wal-specific
      `(wal-transient-state-title-face ((,class (:background nil :foreground ,comp :box nil :inherit bold))))
 
