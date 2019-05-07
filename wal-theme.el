@@ -433,7 +433,7 @@ nil."
        ;; (cblk-ln-bg    (if (eq variant 'dark) "#373040" "#ddd8eb"))
        (cblk-ln-bg    (wal-blend dominant background 0.05))
        ;; (cursor        (if (eq variant 'dark) "#e3dedd" "#100a14"))
-       (cursor        (wal-blend dominant text 0.05))
+       (cursor        dominant)
        ;; (const         (if (eq variant 'dark) "#a45bad" "#4e3163"))
        ;; TODO: What colors are unused? Should we use that?
        ;; (const         (wal-blend dominant ))
