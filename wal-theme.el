@@ -1175,10 +1175,14 @@ nil."
      `(popup-tip-face ((,class (:background ,ttip-sl :foreground ,base :bold nil :italic nil :underline nil))))
 
 ;;;;; powerline
-     `(powerline-active1 ((,class (:background ,act2 :foreground ,base))))
-     `(powerline-active2 ((,class (:background ,act2 :foreground ,base))))
-     `(powerline-inactive1 ((,class (:background ,bg2 :foreground ,base))))
-     `(powerline-inactive2 ((,class (:background ,bg2 :foreground ,base))))
+     ;; `(powerline-active1 ((,class (:background ,act2 :foreground ,base))))
+     ;; `(powerline-active2 ((,class (:background ,act2 :foreground ,base))))
+     ;; `(powerline-inactive1 ((,class (:background ,bg2 :foreground ,base))))
+     ;; `(powerline-inactive2 ((,class (:background ,bg2 :foreground ,base))))
+     `(powerline-active1 ((,class (:background ,dominant :foreground ,bg1))))
+     `(powerline-active2 ((,class (:background ,dominant :foreground ,bg1))))
+     `(powerline-inactive1 ((,class (:background ,bg4 :foreground ,base))))
+     `(powerline-inactive2 ((,class (:background ,bg1 :foreground ,base))))
 
 ;;;;; rainbow-delimiters
      ;; TODO: Redo rainbow delims to ensure they're actually all different
