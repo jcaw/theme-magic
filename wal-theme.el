@@ -313,6 +313,7 @@ nil."
        ;;
        ;; TODO: Explain primary colors
        ;; TODO: Pick better names for primary colors?
+       ;; TODO: Soften the background color blends. They're way too intense as-is.
        (background    wal-black)
        (foreground    wal-white)
        (aqua          wal-magenta)
