@@ -291,7 +291,7 @@ nil."
        (average-lightness
         (wal--average-lightness wal-red wal-green wal-yellow wal-blue wal-magenta wal-cyan))
 
-       ;; TODO: What is class for?
+       ;; TODO: What is `class' for?
        (class '((class color) (min-colors 89)))
        ;; True colors
        ;;
