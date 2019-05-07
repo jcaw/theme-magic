@@ -340,7 +340,6 @@ nil."
        ;; Useful names
        (text          foreground)
        (shadow        wal-black-l)
-       (accent        blue)
        ;; TODO: what was accent-pale used for?
        ;; (accent-pale   "#7590db" "#715ab1")
        ;; (dominant      "#bc6ec5" "#6c3163")
@@ -348,6 +347,7 @@ nil."
        (dominant-fade (color-darken-name
                        (color-desaturate-name dominant 10)
                        30))
+       (secondary        blue)
        ;; (dominant-fade (wal-blend dominant background 0.5))
 
        (comment       (if wal-theme-comment-colored
