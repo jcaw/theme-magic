@@ -407,20 +407,20 @@ nil."
        ;; The alt backgrounds differ
        ;; (bg2           (if (eq variant 'dark) "#212026" "#efeae9"))
        (bg2           (if dark-theme
-                        (wal-blend background dominant 0.025)))
                           ;; (wal-blend background true-black 0.15)
                           (color-lighten-name background 3)
+                        (wal-blend background dominant 0.075)))
        ;; (bg3           (if (eq variant 'dark) "#100a14" "#e3dedd"))
        (bg3           (if dark-theme
-                        (wal-blend background dominant 0.050)))
                           ;; (wal-blend background true-black 0.30)
                           ;; (wal-blend background dominant 0.085)
                           (color-lighten-name background 6)
+                        (wal-blend background dominant 0.115)))
        ;; (bg4           (if (eq variant 'dark) "#0a0814" "#d2ceda"))
        (bg4           (if dark-theme
-                        (wal-blend background dominant 0.075)))
                           ;; (wal-blend background true-black 0.45)
                           (color-lighten-name background 9)
+                        (wal-blend background dominant 0.15)))
        ;; TODO: Should we differ between light and dark, like the default?
        ;; (border        (if (eq variant 'dark) act2 "#b3b9be"))
        (border        act2)
