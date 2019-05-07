@@ -271,8 +271,11 @@ nil."
      ;; TODO: Do we need the double check here?
      ;; If the background is sufficiently dark, it is a dark theme.
      (< background-lightness 0.4)
-     ;; This is a more complex check that should rarely be used. It's a fallback -
-     ;; if the text is lighter than the background, it's probably a dark theme.
+     ;; If the background is sufficiently light, it is a light theme.
+     (not (> background-lightness 0.6))
+     ;; This is a more complex check that should rarely be used. It's a fallback
+     ;; for ambiguous colors. If the text is lighter than the background, it's
+     ;; probably a dark theme.
      (< background-lightness foreground-lightness))))
 
 
