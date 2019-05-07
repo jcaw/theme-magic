@@ -317,21 +317,22 @@ nil."
        (background    wal-black)
        (foreground    wal-white)
        (aqua          wal-magenta)
-       (aqua-bg       (wal-blend background aqua 0.1))
+       (aqua-bg       (wal-blend background aqua 0.05))
        ;; TODO: rename, maybe to "tertiary"?
        (green         wal-green)
-       (green-bg      (wal-blend background green 0.1))
-       (green-bg-s    (wal-blend background green 0.2))
+       (green-bg      (wal-blend background green 0.05))
+       (green-bg-s    (wal-blend background green 0.1))
        ;; TODO: Rename to "key"
        (blue          wal-blue)
-       (blue-bg       (wal-blend background blue 0.1))
-       (blue-bg-s     (wal-blend background blue 0.2))
+       (blue-bg       (wal-blend background blue 0.05))
+       (blue-bg-s     (wal-blend background blue 0.1))
        ;; TODO: Rename to "warn"? No. Yellow is good.
        (yellow        wal-yellow)
-       (yellow-bg     (wal-blend background yellow 0.2))
+       ;; TODO: Should yellow have a different BG gradient to the otehrs?
+       (yellow-bg     (wal-blend background yellow 0.1))
        (red           wal-red)
-       (red-bg        (wal-blend background red 0.1))
-       (red-bg-s      (wal-blend background red 0.2))
+       (red-bg        (wal-blend background red 0.05))
+       (red-bg-s      (wal-blend background red 0.1))
        (magenta       wal-cyan)
        (cyan          wal-magenta)
 
