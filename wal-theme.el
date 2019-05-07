@@ -344,10 +344,19 @@ nil."
        ;; (accent-pale   "#7590db" "#715ab1")
        ;; (dominant      "#bc6ec5" "#6c3163")
        (dominant      wal-cyan)
-       (dominant-fade (color-darken-name
-                       (color-desaturate-name dominant 10)
-                       30))
        (secondary        blue)
+       ;; (dominant-fade (if dark-theme
+       ;;                    ;; If it's a dark theme, we darken the dominant color
+       ;;                    ;; to create the faded version.
+       ;;                    (color-darken-name
+       ;;                     (color-desaturate-name dominant 10)
+       ;;                     30)
+       ;;                  ;; If it's a light theme, lighten the dominant color to
+       ;;                  ;; create the faded version.
+       ;;                  (color-lighten-name
+       ;;                   (color-desaturate-name dominant 10)
+       ;;                   10)))
+       (dominant-fade (wal-blend dominant background 0.5))
        ;; (dominant-fade (wal-blend dominant background 0.5))
 
        (comment       (if wal-theme-comment-colored
