@@ -69,3 +69,7 @@ M-x theme-magic-from-emacs
 ```
 
 Now, when you call `wal -R`, both the wallpaper and the theme will be set.
+
+### MacOS
+
+Theoretically, `theme-magic` should work on MacOS, but I don't have the ability to test it. If anyone has access to a Mac and can test, please [let me know](https://github.com/jcaw/theme-magic/issues/11) the results!
