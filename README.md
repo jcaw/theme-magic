@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-          Apply your Emacs theme to the rest of Linux, using magic. Also works [on Mac](#macos).
+          Apply your Emacs theme to the rest of Linux, using magic. Also works <a href="#macos">on Mac</a>.
 </p>
 
 ---
