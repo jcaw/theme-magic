@@ -47,6 +47,7 @@
 (require 'font-lock)
 (require 'ansi-color)
 (require 'seq)
+(require 'cl-lib)
 
 
 (defvar theme-magic--theming-functions
@@ -458,7 +459,7 @@ handling."
   (message "Applying colors: %s"
            ;; Number the colors to make it clearer for the user which color is
            ;; being applied where.
-           (mapcar* #'cons
+           (cl-mapcar #'cons
                     (number-sequence 0 (length colors))
                     colors))
   (if (zerop (theme-magic--call-pywal-process colors))
