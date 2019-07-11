@@ -458,8 +458,8 @@ handling."
            ;; Number the colors to make it clearer for the user which color is
            ;; being applied where.
            (cl-mapcar #'cons
-                    (number-sequence 0 (length colors))
-                    colors))
+                      (number-sequence 0 (length colors))
+                      colors))
   (if (zerop (theme-magic--call-pywal-process colors))
       (message "Successfully applied colors!")
     (user-error "There was an error applying the colors. See buffer \"*pywal*\" for details")))
