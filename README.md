@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-          Apply your Emacs theme to the rest of Linux, using magic.
+          Apply your Emacs theme to the rest of Linux, using magic. Also works <a href="#macos">on Mac</a>.
 </p>
 
 ---
@@ -67,3 +67,7 @@ M-x theme-magic-from-emacs
 ```
 
 Now, when you call `wal -R`, both the wallpaper and the theme will be set.
+
+### MacOS
+
+`theme-magic` [also works](https://github.com/jcaw/theme-magic/issues/11) on MacOS. iTerm2 should inherit from the exported Emacs theme. You will need to call `wal -R` to refresh when the terminal restarts.
