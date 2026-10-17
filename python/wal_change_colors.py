@@ -5,6 +5,7 @@ import re
 import os
 import shutil
 import json
+import tempfile
 from subprocess import Popen, PIPE
 
 
@@ -43,9 +44,28 @@ def load_config():
 
 
 def save_config(config_dict):
-    """Save the current pywal configuration."""
-    with open(CONFIG_FILE_PATH, "w") as f:
-        json.dump(config_dict, f)
+    """Save the current pywal configuration.
+
+    Written atomically - to a temporary file in the same directory, then
+    renamed over the target. Truncating the config in place races with
+    other writers (pywal writes this same file), which can leave a
+    half-overwritten, unparseable `colors.json` behind.
+    """
+    create_wal_cache()
+    # Keep the existing permissions, if there's an existing file.
+    mode = os.stat(CONFIG_FILE_PATH).st_mode & 0o777 if config_exists() else 0o644
+    fd, temp_path = tempfile.mkstemp(dir=WAL_DIR, prefix="colors.json.")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(config_dict, f)
+            f.flush()
+            os.fsync(f.fileno())
+        os.chmod(temp_path, mode)
+        os.replace(temp_path, CONFIG_FILE_PATH)
+    except BaseException:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        raise
 
 
 def rewrite_wal_file(new_wallpaper):
